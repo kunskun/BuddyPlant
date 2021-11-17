@@ -17,7 +17,7 @@ import { Button } from "react-native-elements/dist/buttons/Button";
 import Image from "react-native-scalable-image";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-function plntInfo() {
+function plantInfo() {
   const list = 
     {
       image:
@@ -333,4 +333,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default plntInfo;
+export default plantInfo;
