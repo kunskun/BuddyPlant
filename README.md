@@ -6,6 +6,14 @@ Mobile Device Programming Project
   <li>expo install expo-google-app-auth</li>
 </ul>
 
+# Dependencies each screen (Pao)
+<ul>
+  <li>expo install react-native-elements</li>
+  <li>expo install react-native-safe-area-context</li>
+  <li>expo install @react-native-community/datetimepicker</li>
+  <li>react-native-scalable-image</li>
+</ul>
+
 # Task to do
 <ul>
   <li>Google Login <span>/almost done</span></li>
