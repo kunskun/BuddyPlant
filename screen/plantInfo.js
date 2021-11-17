@@ -28,7 +28,7 @@ function plntInfo() {
     };
   
   const nowDate = new Date(
-    Date.now() - new Date().getTimezoneOffset() 
+    Date.now() - new Date().getTimezoneOffset()
     )
   const [isShowDate, setShowDate] = useState(false);
   const [feedBack, setFeedBack] = useState("")
@@ -36,21 +36,17 @@ function plntInfo() {
   const [selectDate, setSelectDate] = useState(nowDate);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   
-  
-  const newDate = selectDate
-    .toISOString()
-    .split("T")[0]
-    .toString()
-    .replace(/(\d{4})-(\d{2})-(\d{2})/, "$3/$2/$1");
+  const getNewDate = () => {
+    return selectDate.getDate()+'/'+parseInt(selectDate.getMonth()+1)+'/'+selectDate.getFullYear()
+  }
 
   const handleConfirm = (date) => {
     setDatePickerVisible(false);
     setSelectDate(date);
-    console.log("nowDate: "+nowDate);
-    console.log("Date: "+date);
   };
 
   const sendFeedBack = () => {
+      console.log("sned feedback: "+ feedBack);
       setShowFeedBack(false);
       setFeedBack("");
   }
@@ -82,11 +78,11 @@ function plntInfo() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={[{ alignSelf: "flex-end", paddingBottom: 0 }]}>
+            <View style={[{ alignSelf: "flex-end", paddingRight: 6 }]}>
               <Icon
                 name="times"
                 type="font-awesome-5"
-                iconStyle={{ fontSize: 25 }}
+                iconStyle={{ fontSize: 30 }}
                 color="black"
                 onPress={() => setShowDate(false)}
               />
@@ -121,7 +117,7 @@ function plntInfo() {
                     fontWeight: "bold",
                   }}
                 >
-                  {newDate}
+                  {getNewDate()}
                 </Text>
                 <Icon
                   name="calendar-alt"
@@ -134,9 +130,10 @@ function plntInfo() {
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
-                onConfirm={handleConfirm}
+                onConfirm={(date) => handleConfirm(date)}
                 onCancel={() => setDatePickerVisible(false)}
                 minimumDate={nowDate}
+                date={nowDate}
               />
             </View>
 
@@ -166,11 +163,11 @@ function plntInfo() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={[{ alignSelf: "flex-end", paddingBottom: 0 }]}>
+            <View style={[{ alignSelf: "flex-end", paddingRight: 5 }]}>
               <Icon
                 name="times"
                 type="font-awesome-5"
-                iconStyle={{ fontSize: 25 }}
+                iconStyle={{ fontSize: 30 }}
                 color="black"
                 onPress={() => setShowFeedBack(false)}
               />
