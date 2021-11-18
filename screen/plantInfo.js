@@ -16,6 +16,7 @@ import { Header, Icon } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import Image from "react-native-scalable-image";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { color } from "react-native-elements/dist/helpers";
 
 function plantInfo() {
   const list = {
@@ -24,7 +25,7 @@ function plantInfo() {
     name: "ผักชี",
     type: "กินใบ, กินราก",
     text: "เหมยปักขคณนาอริยสงฆ์ อึมครึมเอาท์ มือถือโฟล์ค แอคทีฟแฟนซีคันยิสหัชญาณเลดี้ บู๊ สเตเดียมเอ็กซ์เพรสม้านั่งเชฟเดบิต คอมเพล็กซ์ ฮอต มาร์เก็ตติ้ง แก๊สโซฮอล์ผลักดัน ไฟต์แรลลี่เท็กซ์ เซ็นเซอร์รัมเยลลี่สถาปัตย์ สวีทแมชชีนตุ๊กออกแบบ รีดไถพันธกิจแอ็คชั่นพ่อค้าคาราโอเกะ ผลักดันเซ็กส์ซูมไคลแม็กซ์ซันตาคลอส วอลซ์ไฮไลต์เสือโคร่ง",
-    toDo: ["2021-10-10 ใส่ปุ๋ย", "2021-10-20 ลดน้ำต้นไม้"],
+    toDo: ["2021-10-10 ใส่ปุ๋ย", "2021-10-20 ลดน้ำต้นไม้", '2021-10-30 ถอนทิ้งได้'],
   };
 
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
@@ -33,7 +34,7 @@ function plantInfo() {
   const [isShowFeedBack, setShowFeedBack] = useState(false);
   const [selectDate, setSelectDate] = useState(nowDate);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [isUser, setUser] = useState(false);
+  const [isUser, setUser] = useState(true);
 
   const getNewDate = () => {
     return (
@@ -51,7 +52,11 @@ function plantInfo() {
   };
 
   const sendFeedBack = () => {
-    console.log("sned feedback: " + feedBack);
+    if (feedBack == "") {
+      console.log("none feedback");
+    } else {
+      console.log("sned feedback: " + feedBack);
+    }
     setShowFeedBack(false);
     setFeedBack("");
   };
@@ -83,38 +88,27 @@ function plantInfo() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={[{ alignSelf: "flex-end", paddingRight: 6 }]}>
+            <View style={styles.contX}>
               <Icon
                 name="times"
                 type="font-awesome-5"
-                iconStyle={{ fontSize: 30 }}
-                color="black"
+                iconStyle={styles.iconX}
                 onPress={() => setShowDate(false)}
               />
             </View>
 
-            <View style={{ alignSelf: "center" }}>
+            <View style={styles.headerTextPopup}>
               <Text
                 style={{
                   color: "#fff",
                   fontSize: 35,
                   fontWeight: "bold",
                   marginBottom: 5,
-                  marginTop: 0,
-                  paddingTop: 0,
                 }}
               >
                 วันที่เพาะปลูก
               </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingVertical: 8,
-                  backgroundColor: "#eeee",
-                }}
-              >
+              <View style={styles.dateBox}>
                 <Text
                   style={{
                     color: "#000",
@@ -125,11 +119,12 @@ function plantInfo() {
                   {getNewDate()}
                 </Text>
                 <Icon
+                  containerStyle={{marginLeft: 20}}
                   name="calendar-alt"
                   type="font-awesome-5"
                   onPress={() => setDatePickerVisible(true)}
                   color="#000"
-                  iconStyle={{ fontSize: 30, marginLeft: 20 }}
+                  iconStyle={{ fontSize: 30}}
                 />
               </View>
               <DateTimePickerModal
@@ -168,17 +163,16 @@ function plantInfo() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={[{ alignSelf: "flex-end", paddingRight: 5 }]}>
+            <View style={styles.contX}>
               <Icon
                 name="times"
                 type="font-awesome-5"
-                iconStyle={{ fontSize: 30 }}
-                color="black"
+                iconStyle={styles.iconX}
                 onPress={() => setShowFeedBack(false)}
               />
             </View>
 
-            <View style={{ alignSelf: "center" }}>
+            <View style={styles.headerTextPopup}>
               <Text
                 style={{
                   color: "#fff",
@@ -196,9 +190,10 @@ function plantInfo() {
                 placeholderTextColor="#aaa"
                 style={{
                   backgroundColor: "#fff",
-                  paddingHorizontal: 5,
+                  paddingHorizontal: 10,
                   width: 250,
                   fontSize: 20,
+                  borderRadius: 10,
                 }}
                 textAlignVertical="top"
                 numberOfLines={5}
@@ -268,7 +263,7 @@ function plantInfo() {
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text style={styles.headerText}>ชื่อ: {list.name}</Text>
-            <TouchableOpacity onPress={() => setShowFeedBack(true)} style={{}}>
+            <TouchableOpacity onPress={() => setShowFeedBack(true)}>
               <Icon
                 name="comment-dots"
                 type="font-awesome-5"
@@ -278,14 +273,19 @@ function plantInfo() {
           </View>
           <Text style={styles.headerText}>
             ข้อมูลเฉพะ: {"\n"}
-            <Text style={{fontSize: 20, fontWeight: 'normal'}}>{list.text}</Text>     
+            <Text style={styles.textDetail}>
+              {list.text}
+            </Text>
           </Text>
+          {/* show if have user */}
           {isUser && (
             <Text style={styles.headerText}>
               สิ่งที่ต้องทำ:
               {"\n"}
               {list.toDo.map((l, i) => (
-                <Text style={{fontSize: 20, fontWeight: 'normal'}}>{l+"\n"}</Text>     
+                <Text style={[styles.textDetail, (i==0||i==1)&&{textDecorationLine: 'line-through', textDecorationColor: 'black'}]}>
+                  {l + "\n"}
+                </Text>
               ))}
             </Text>
           )}
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   bottomPart: {
     paddingHorizontal: 15,
-    marginVertical: 20,
+    marginVertical: 10,
   },
   selectTimeBtn: {
     backgroundColor: "#2C7B11",
@@ -356,7 +356,36 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 25,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 5,
+    textShadowColor: 'black',
+    textShadowRadius: 0.5
+  },
+  iconX: {
+    fontSize: 30,
+    color: "#000",
+    textShadowColor: "#fff",
+    textShadowRadius: 5,
+  },
+  contX: {
+    position: "absolute",
+    right: 15,
+    top: 5,
+  },
+  headerTextPopup: {
+    alignSelf: "center",
+    paddingTop: 5,
+  },
+  dateBox: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 8,
+    backgroundColor: "#eeee",
+    borderRadius: 5,
+  },
+  textDetail: {
+    fontSize: 18, 
+    fontWeight: "normal",
   },
 });
 

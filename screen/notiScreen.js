@@ -23,6 +23,11 @@ function searchScreen() {
     { name: "ไบเบิล เยอบีราวิลเลจแฟรนไชส์ แคชเชียร์กีวีนายแบบโปรหม่านโถว ",
       image: "https://reactnative.dev/img/tiny_logo.png",
     },
+    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
+
   ];
 
   return (
