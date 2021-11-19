@@ -12,20 +12,34 @@ import {
 // expo install react-native-elements
 // expo install react-native-safe-area-context
 // expo install react-native-modal-datetime-picker @react-native-community/datetimepicker
+// expo install expo-notifications
 import { Header, Icon } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import Image from "react-native-scalable-image";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { color } from "react-native-elements/dist/helpers";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 function plantInfo() {
   const list = {
     image:
-      "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
+      "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg",
     name: "ผักชี",
     type: "กินใบ, กินราก",
     text: "เหมยปักขคณนาอริยสงฆ์ อึมครึมเอาท์ มือถือโฟล์ค แอคทีฟแฟนซีคันยิสหัชญาณเลดี้ บู๊ สเตเดียมเอ็กซ์เพรสม้านั่งเชฟเดบิต คอมเพล็กซ์ ฮอต มาร์เก็ตติ้ง แก๊สโซฮอล์ผลักดัน ไฟต์แรลลี่เท็กซ์ เซ็นเซอร์รัมเยลลี่สถาปัตย์ สวีทแมชชีนตุ๊กออกแบบ รีดไถพันธกิจแอ็คชั่นพ่อค้าคาราโอเกะ ผลักดันเซ็กส์ซูมไคลแม็กซ์ซันตาคลอส วอลซ์ไฮไลต์เสือโคร่ง",
-    toDo: ["2021-10-10 ใส่ปุ๋ย", "2021-10-20 ลดน้ำต้นไม้", '2021-10-30 ถอนทิ้งได้'],
+    toDo: [
+      "2021-10-10 ใส่ปุ๋ย",
+      "2021-10-20 ลดน้ำต้นไม้",
+      "2021-10-30 ถอนทิ้งได้",
+    ],
   };
 
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
@@ -34,7 +48,7 @@ function plantInfo() {
   const [isShowFeedBack, setShowFeedBack] = useState(false);
   const [selectDate, setSelectDate] = useState(nowDate);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [isUser, setUser] = useState(true);
+  const [isUser, setUser] = useState(false);
 
   const getNewDate = () => {
     return (
@@ -61,10 +75,11 @@ function plantInfo() {
     setFeedBack("");
   };
 
-  const sendDate = () => {
+  const sendDate = async () => {
     setShowDate(false);
     setSelectDate(selectDate);
     console.log("sendDate: " + selectDate);
+    await schedulePushNotification();
   };
 
   const notification = () => {
@@ -74,6 +89,31 @@ function plantInfo() {
   const user = () => {
     console.log("user");
   };
+
+  function calculateSecondsToSpecifiedDate() {
+    var Difference_In_Time = selectDate.getTime() - nowDate.getTime()
+    return Difference_In_Time;
+  }
+
+  async function schedulePushNotification() {
+    await Notifications.setNotificationChannelAsync("new-noti", {
+      name: "notifications",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "mixkit-long-pop-2358.wav",
+    });
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "อย่าลืมลดน้ำต้นไม้นะ",
+        body: "ลดต้นผักชี",
+        data: { data: "goes here" },
+      },
+      trigger: {
+        seconds: calculateSecondsToSpecifiedDate(),
+        channelId: "new-noti",
+      },
+    });
+  }
 
   return (
     <View style={styles.container}>
@@ -119,12 +159,12 @@ function plantInfo() {
                   {getNewDate()}
                 </Text>
                 <Icon
-                  containerStyle={{marginLeft: 20}}
+                  containerStyle={{ marginLeft: 20 }}
                   name="calendar-alt"
                   type="font-awesome-5"
                   onPress={() => setDatePickerVisible(true)}
                   color="#000"
-                  iconStyle={{ fontSize: 30}}
+                  iconStyle={{ fontSize: 30 }}
                 />
               </View>
               <DateTimePickerModal
@@ -273,9 +313,7 @@ function plantInfo() {
           </View>
           <Text style={styles.headerText}>
             ข้อมูลเฉพะ: {"\n"}
-            <Text style={styles.textDetail}>
-              {list.text}
-            </Text>
+            <Text style={styles.textDetail}>{list.text}</Text>
           </Text>
           {/* show if have user */}
           {isUser && (
@@ -283,7 +321,15 @@ function plantInfo() {
               สิ่งที่ต้องทำ:
               {"\n"}
               {list.toDo.map((l, i) => (
-                <Text style={[styles.textDetail, (i==0||i==1)&&{textDecorationLine: 'line-through', textDecorationColor: 'black'}]}>
+                <Text
+                  style={[
+                    styles.textDetail,
+                    (i == 0 || i == 1) && {
+                      textDecorationLine: "line-through",
+                      textDecorationColor: "black",
+                    },
+                  ]}
+                >
                   {l + "\n"}
                 </Text>
               ))}
@@ -357,8 +403,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 5,
-    textShadowColor: 'black',
-    textShadowRadius: 0.5
+    textShadowColor: "black",
+    textShadowRadius: 0.5,
   },
   iconX: {
     fontSize: 30,
@@ -384,7 +430,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   textDetail: {
-    fontSize: 18, 
+    fontSize: 18,
     fontWeight: "normal",
   },
 });
