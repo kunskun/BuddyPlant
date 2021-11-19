@@ -32,6 +32,9 @@ function searchScreen() {
 
   //////////////////////////////////////////////////////
   const [isPlantCollection, setPlantCollection] = useState([]);
+  const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState(
+    []
+  );
   const [isTypeFilter, setTypeFilter] = useState([]);
   const [isCategoryFilter, setCategoryFilter] = useState([]);
   const [isSeasonFilter, setSeasonFilter] = useState([]);
@@ -55,6 +58,7 @@ function searchScreen() {
       });
     });
     setPlantCollection(all_data);
+    setPlantCollectionForFilter(all_data);
   };
 
   const getTypeCollection = (querySnapshot) => {
@@ -98,9 +102,9 @@ function searchScreen() {
 
   useEffect(() => {
     plantCollection.onSnapshot(getPlantCollection);
-    typeCollection.onSnapshot(getTypeCollection);
-    categoryCollection.onSnapshot(getCategoryCollection);
-    seasonCollection.onSnapshot(getSeasonCollection);
+    // typeCollection.onSnapshot(getTypeCollection);
+    // categoryCollection.onSnapshot(getCategoryCollection);
+    // seasonCollection.onSnapshot(getSeasonCollection);
     // console.log(isTypeFilter)
     console.log("IN userEffect method");
     // console.log(isPlantCollection)
@@ -116,11 +120,6 @@ function searchScreen() {
         checked: !checked,
       })
       .then(() => {});
-  };
-
-  const filterSearch = () => {
-    setModalVisible(false);
-    /* ....ค้นหา filter.... */
   };
 
   const list = [
@@ -212,7 +211,12 @@ function searchScreen() {
     { id: 5, name: "ประเภทกินเมล็ด", checked: isSeed, set: setSeed },
 
     { id: 6, name: "ผักพื้นบ้านหรือผักป่า", checked: isFloor, set: setFloor },
-    { id: 7, name: "ผักสมุนไพร และเครื่องเทศ", checked: isIndia, set: setIndia },
+    {
+      id: 7,
+      name: "ผักสมุนไพร และเครื่องเทศ",
+      checked: isIndia,
+      set: setIndia,
+    },
     { id: 8, name: "ผักสวนครัว", checked: isKitchen, set: setKitchen },
 
     { id: 9, name: "ฤดูหนาว", checked: isCool, set: setCool },
@@ -220,13 +224,54 @@ function searchScreen() {
     { id: 11, name: "ฤดูฝน", checked: isRain, set: setRain },
   ];
 
+  const filterSearch = () => {
+    setModalVisible(false);
+    /* ....ค้นหา filter.... */
+    const plant = [...isPlantCollectionForFilter];
+    const afterTypeKitchen = plant.filter((value, index) => {
+      if (isKitchen) {
+        return value.type == "ผักสวนครัว";
+      }
+    });
+    const afterTypeFloor = plant.filter((value, index) => {
+      if (isFloor) {
+        return value.type == "ผักพื้นบ้านหรือผักป่า";
+      }
+    });
+    const afterTypeIndia = plant.filter((value, index) => {
+      if (isIndia) {
+        return value.type == "ผักสมุนไพร และเครื่องเทศ";
+      }
+    });
+    const arrayFilterType = [
+      ...afterTypeKitchen,
+      ...afterTypeFloor,
+      ...afterTypeIndia,
+    ];
+    setPlantCollection(arrayFilterType);
+
+    if (isFloor == false && isKitchen == false && isIndia == false) {
+      setPlantCollection(isPlantCollectionForFilter);
+    } else {
+      const arrayFilterType = [
+        ...afterTypeKitchen,
+        ...afterTypeFloor,
+        ...afterTypeIndia,
+      ];
+      setPlantCollection(arrayFilterType);
+    }
+
+    // filterList.map((item) => {
+    //   return item.set(false);
+    // })
+  };
+
   const closeModal = () => {
-    console.log("Hello")
-    setModalVisible(!modalVisible)
+    console.log("closeModal");
+    setModalVisible(!modalVisible);
     filterList.map((item) => {
       return item.set(false);
-
-    })
+    });
   };
 
   return (
@@ -252,9 +297,11 @@ function searchScreen() {
                 name="filter"
                 size={25}
                 color="white"
-                onPress={() => setModalVisible(!modalVisible)}
+                // onPress={() => setModalVisible(!modalVisible)}
               />
             }
+            // เอาonPresออกมาอยู่ข้างนอกTag ICON เพราะว่าบางครั้งมันคลิ๊กโดนTag button แต่ไม่โดนTag Icon ก็เลยไม่ interantion
+            onPress={() => setModalVisible(!modalVisible)}
           />
         </Pressable>
 
@@ -275,7 +322,7 @@ function searchScreen() {
                     name="times"
                     size={25}
                     color="black"
-                    onPress={() => 
+                    onPress={() =>
                       // setModalVisible(!modalVisible)
                       closeModal()
                     }
@@ -288,72 +335,71 @@ function searchScreen() {
                 {/*... render ข้อมูลมาจาก array ที่ดึงมาจาก firebase  ---- มีการmapข้อมูลมาจาก 3 array(แต่ละ filter type)...*/}
                 <Text>ชนิด</Text>
                 {filterList.map((e) => {
-                  if(e.name.includes("ผัก")){
-                  return (
-                    <CheckBox
-                      key={e.id}
-                      size={30}
-                      title={e.name}
-                      checked={e.checked}
-                      onPress={() => {
-                        // toggleFilter(e.key, e.name, e.checked, "filterType");
-                        // e.checked = !e.checked
-                        e.set(!e.checked);
-                      }}
-                      containerStyle={styles.checkBoxCon}
-                      textStyle={{ fontSize: 20 }}
-                      checkedColor="#2C7B11"
-                    />
-                  );
-                    }
+                  if (e.name.includes("ผัก")) {
+                    return (
+                      <CheckBox
+                        key={e.id}
+                        size={30}
+                        title={e.name}
+                        checked={e.checked}
+                        onPress={() => {
+                          // toggleFilter(e.key, e.name, e.checked, "filterType");
+                          // e.checked = !e.checked
+                          e.set(!e.checked);
+                        }}
+                        containerStyle={styles.checkBoxCon}
+                        textStyle={{ fontSize: 20 }}
+                        checkedColor="#2C7B11"
+                      />
+                    );
+                  }
                 })}
                 <Text>ประเภท</Text>
                 {filterList.map((e) => {
-                  if(e.name.includes("ประเภท")){
-                  return (
-                    <CheckBox
-                      key={e.id}
-                      size={30}
-                      title={e.name}
-                      checked={e.checked}
-                      onPress={() => {
-                        // toggleFilter(
-                        //   e.key,
-                        //   e.name,
-                        //   e.checked,
-                        //   "filterCategory"
-                        // );
-                        // toggleFilter(e.key, e.name, e.checked, "filterType");
-                        // e.checked = !e.checked
-                        e.set(!e.checked);
-                      }}
-                      containerStyle={styles.checkBoxCon}
-                      textStyle={{ fontSize: 20 }}
-                      checkedColor="#2C7B11"
-                    />
-                  );
-                    }
+                  if (e.name.includes("ประเภท")) {
+                    return (
+                      <CheckBox
+                        key={e.id}
+                        size={30}
+                        title={e.name}
+                        checked={e.checked}
+                        onPress={() => {
+                          // toggleFilter(
+                          //   e.key,
+                          //   e.name,
+                          //   e.checked,
+                          //   "filterCategory"
+                          // );
+                          // toggleFilter(e.key, e.name, e.checked, "filterType");
+                          // e.checked = !e.checked
+                          e.set(!e.checked);
+                        }}
+                        containerStyle={styles.checkBoxCon}
+                        textStyle={{ fontSize: 20 }}
+                        checkedColor="#2C7B11"
+                      />
+                    );
+                  }
                 })}
                 <Text>ฤดู</Text>
                 {filterList.map((e) => {
-                  if(e.name.includes("ฤดู")){
-                  return (
-                    <CheckBox
-                      key={e.key}
-                      size={30}
-                      title={e.name}
-                      checked={e.checked}
-                      onPress={() => {
-                        // toggleFilter(e.key, e.name, e.checked, "filterSeason");
-                        e.set(!e.checked);
-
-                      }}
-                      containerStyle={styles.checkBoxCon}
-                      textStyle={{ fontSize: 20 }}
-                      checkedColor="#2C7B11"
-                    />
-                  );
-                    }
+                  if (e.name.includes("ฤดู")) {
+                    return (
+                      <CheckBox
+                        key={e.key}
+                        size={30}
+                        title={e.name}
+                        checked={e.checked}
+                        onPress={() => {
+                          // toggleFilter(e.key, e.name, e.checked, "filterSeason");
+                          e.set(!e.checked);
+                        }}
+                        containerStyle={styles.checkBoxCon}
+                        textStyle={{ fontSize: 20 }}
+                        checkedColor="#2C7B11"
+                      />
+                    );
+                  }
                 })}
               </View>
             </ScrollView>
