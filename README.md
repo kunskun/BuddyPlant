@@ -1,10 +1,15 @@
 # BuddyPlant
 Mobile Device Programming Project 
 
-# Dependencies
+# Dependencies Login and Navigation
 <ul>
   <li>expo install expo-google-app-auth</li>
   <li>expo install firebase</li>
+  <li>expo install @react-navigation/native</li>
+  <li>expo install react-native-screens</li>
+  <li>expo install @react-navigation/native-stack</li>
+  <li>expo install @react-navigation/bottom-tabs</li>
+  <li>expo install @expo/vector-icons</li>
 </ul>
 
 # Dependencies each screen (Pao)
