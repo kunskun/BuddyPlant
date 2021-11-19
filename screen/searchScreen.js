@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,11 +6,13 @@ import {
   Pressable,
   Modal,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
+import firebase from "../database/firebaseDB";
 
 function searchScreen() {
   const [search, setSearch] = useState("");
@@ -18,6 +20,96 @@ function searchScreen() {
   const [isLeaf, setLeaf] = useState(false);
   const [isFruit, setFruit] = useState(false);
   const [isRoot, setRoot] = useState(false);
+  const [isTrunk, setTrunk] = useState(false);
+  const [isSeed, setSeed] = useState(false);
+
+  //////////////////////////////////////////////////////
+  const [isPlantCollection, setPlantCollection] = useState([]);
+  const [isTypeFilter, setTypeFilter] = useState([]);
+  const [isCategoryFilter, setCategoryFilter] = useState([]);
+  const [isSeasonFilter, setSeasonFilter] = useState([]);
+  const [isFlag, setFlag] = useState("");
+
+  const plantCollection = firebase.firestore().collection("plants");
+  const typeCollection = firebase.firestore().collection("filterType");
+  const categoryCollection = firebase.firestore().collection("filterCategory");
+  const seasonCollection = firebase.firestore().collection("filterSeason");
+
+  const getPlantCollection = (querySnapshot) => {
+    const all_data = [];
+    querySnapshot.forEach((res) => {
+      all_data.push({
+        key: res.id,
+        name: res.data().name,
+        image: res.data().image,
+        type: res.data().type,
+        category: res.data().category,
+        season: res.data().season,
+      });
+    });
+    setPlantCollection(all_data);
+  };
+
+  const getTypeCollection = (querySnapshot) => {
+    console.log("getTypeCollection");
+    const filter_data = [];
+    querySnapshot.forEach((res) => {
+      filter_data.push({
+        key: res.id,
+        name: res.data().name,
+        checked: res.data().checked,
+      });
+    });
+    setTypeFilter(filter_data);
+  };
+
+  const getCategoryCollection = (querySnapshot) => {
+    // console.log("getCategoryCollection");
+    const filter_data = [];
+    querySnapshot.forEach((res) => {
+      filter_data.push({
+        key: res.id,
+        name: res.data().name,
+        checked: res.data().checked,
+      });
+    });
+    setCategoryFilter(filter_data);
+  };
+
+  const getSeasonCollection = (querySnapshot) => {
+    // console.log("getSeasonCollection");
+    const filter_data = [];
+    querySnapshot.forEach((res) => {
+      filter_data.push({
+        key: res.id,
+        name: res.data().name,
+        checked: res.data().checked,
+      });
+    });
+    setSeasonFilter(filter_data);
+  };
+
+  useEffect(() => {
+    plantCollection.onSnapshot(getPlantCollection);
+    typeCollection.onSnapshot(getTypeCollection);
+    categoryCollection.onSnapshot(getCategoryCollection);
+    seasonCollection.onSnapshot(getSeasonCollection);
+    // console.log(isTypeFilter)
+    console.log("IN userEffect method");
+    // console.log(isPlantCollection)
+  }, []);
+
+  /*... update ข้อมูลใน firebase(ในแต่ละ filterCillection) เพื่อเปลี่ยนสถานะในหน้า filter ...*/
+  const toggleFilter = (key, name, checked, type) => {
+    // console.log("toggle Filter")
+    const updateSubjDoc = firebase.firestore().collection(type).doc(key);
+    updateSubjDoc
+      .set({
+        name: name,
+        checked: !checked,
+      })
+      .then(() => {});
+  };
 
   const filterSearch = () => {
     setModalVisible(false);
@@ -106,9 +198,11 @@ function searchScreen() {
   ];
 
   const filterList = [
-    { name: "พืชกินใบ", checked: isLeaf, set: setLeaf },
-    { name: "พืชกินผล", checked: isFruit, set: setFruit },
-    { name: "พืชกินราก", checked: isRoot, set: setRoot },
+    { id: 1, name: "ประเภทกินใบ", checked: isLeaf, set: setLeaf },
+    { id: 2, name: "ประเภทกินผล", checked: isFruit, set: setFruit },
+    { id: 3, name: "ประเภทกินราก", checked: isRoot, set: setRoot },
+    { id: 4, name: "ประเภทกินลำต้น", checked: isTrunk, set: setTrunk },
+    { id: 5, name: "ประเภทกินเมล็ด", checked: isSeed, set: setSeed },
   ];
 
   return (
@@ -162,23 +256,67 @@ function searchScreen() {
                 }
               />
             </View>
-            <View style={{ marginTop: 0, alignSelf: "flex-start" }}>
-              {filterList.map((e) => {
-                return (
-                  <CheckBox
-                    size={30}
-                    title={e.name}
-                    checked={e.checked}
-                    onPress={() => {
-                      e.set(!e.checked);
-                    }}
-                    containerStyle={styles.checkBoxCon}
-                    textStyle={{ fontSize: 20 }}
-                    checkedColor="#2C7B11"
-                  />
-                );
-              })}
-            </View>
+            <ScrollView style={{ width: "100%", height: "80%" }}>
+              <View style={{ marginTop: 0, alignSelf: "flex-start" }}>
+                {/*... render ข้อมูลมาจาก array ที่ดึงมาจาก firebase  ---- มีการmapข้อมูลมาจาก 3 array(แต่ละ filter type)...*/}
+                <Text>ชนิด</Text>
+                {isTypeFilter.map((e) => {
+                  return (
+                    <CheckBox
+                      key={e.key}
+                      size={30}
+                      title={e.name}
+                      checked={e.checked}
+                      onPress={() => {
+                        toggleFilter(e.key, e.name, e.checked, "filterType");
+                      }}
+                      containerStyle={styles.checkBoxCon}
+                      textStyle={{ fontSize: 20 }}
+                      checkedColor="#2C7B11"
+                    />
+                  );
+                })}
+                <Text>ประเภท</Text>
+                {isCategoryFilter.map((e) => {
+                  return (
+                    <CheckBox
+                      key={e.key}
+                      size={30}
+                      title={e.name}
+                      checked={e.checked}
+                      onPress={() => {
+                        toggleFilter(
+                          e.key,
+                          e.name,
+                          e.checked,
+                          "filterCategory"
+                        );
+                      }}
+                      containerStyle={styles.checkBoxCon}
+                      textStyle={{ fontSize: 20 }}
+                      checkedColor="#2C7B11"
+                    />
+                  );
+                })}
+                <Text>ฤดู</Text>
+                {isSeasonFilter.map((e) => {
+                  return (
+                    <CheckBox
+                      key={e.key}
+                      size={30}
+                      title={e.name}
+                      checked={e.checked}
+                      onPress={() => {
+                        toggleFilter(e.key, e.name, e.checked, "filterSeason");
+                      }}
+                      containerStyle={styles.checkBoxCon}
+                      textStyle={{ fontSize: 20 }}
+                      checkedColor="#2C7B11"
+                    />
+                  );
+                })}
+              </View>
+            </ScrollView>
             <Button
               title="ค้นหา"
               buttonStyle={styles.searchFilterBtn}
@@ -189,10 +327,15 @@ function searchScreen() {
       </View>
 
       <View style={styles.midPart}>
-        <ScrollView style={{width: "100%", height: "75%"}}>
-          {list.map((l, i) => (
+        <ScrollView style={{ width: "100%", height: "75%" }}>
+          {isPlantCollection.map((l, i) => (
             <View style={styles.plantBox}>
-              <ListItem key={l.name+i} containerStyle={{ padding: 5 }}     /* onPress={() => {console.log(l.name);}} */>
+              <ListItem
+                key={l.name + i}
+                containerStyle={{
+                  padding: 5,
+                }} /* onPress={() => {console.log(l.name);}} */
+              >
                 <Avatar size="large" source={{ uri: l.image }} />
                 <ListItem.Content>
                   <ListItem.Title>{l.name}</ListItem.Title>
