@@ -10,7 +10,7 @@ Mobile Device Programming Project
 <ul>
   <li>expo install react-native-elements</li>
   <li>expo install react-native-safe-area-context</li>
-  <li>expo install @react-native-community/datetimepicker</li>
+  <li>expo install react-native-modal-datetime-picker @react-native-community/datetimepicker</li>
   <li>react-native-scalable-image</li>
 </ul>
 
