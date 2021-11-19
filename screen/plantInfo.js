@@ -90,8 +90,11 @@ function plantInfo() {
     console.log("user");
   };
 
+  // set select time to 8.00 am
   function calculateSecondsToSpecifiedDate() {
-    var Difference_In_Time = selectDate.getTime() - nowDate.getTime()
+    selectDate.setDate(selectDate.getDate()+1)
+    selectDate.setHours(7, 0, 0);
+    var Difference_In_Time = selectDate.getTime() - nowDate.getTime();
     return Difference_In_Time;
   }
 
