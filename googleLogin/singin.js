@@ -13,8 +13,7 @@ export async function signInWithGoogleAsync() {
         });
 
         // console.log(result);
-        const rest_fname = result.user.givenName;
-        const rest_lname = result.user.familyName;
+        const rest_name = result.user.name;
         const rest_email = result.user.email;
         const rest_image = result.user.photoUrl;
 
@@ -24,7 +23,7 @@ export async function signInWithGoogleAsync() {
 
             await userCollection.get().then(async items => {
                 await items.forEach(res => {
-                    const { email, fname, lname, picture, isLogin } = res.data();
+                    const { email, name, image, isLogin } = res.data();
                     console.log("Email: "+email);
                     
                     if(email === rest_email){
@@ -38,9 +37,8 @@ export async function signInWithGoogleAsync() {
                     list_users.push({
                         user_id: res.id,
                         email: email,
-                        fname: fname,
-                        lname: lname,
-                        image: picture,
+                        name: name,
+                        image: image,
                         isLogin: isLogin
                     });
                 }); 
@@ -48,9 +46,8 @@ export async function signInWithGoogleAsync() {
                 if (!found_account) {
                     userCollection.add({
                         email: rest_email,
-                        firstname: rest_fname,
-                        lastname: rest_lname,
-                        picture: rest_image,
+                        name: rest_name,
+                        image: rest_image,
                         role: "user",
                         isLogin: true
                     })
