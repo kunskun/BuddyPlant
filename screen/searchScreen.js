@@ -7,6 +7,7 @@ import {
   Modal,
   ScrollView,
   Alert,
+  RadioButton,
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
@@ -38,7 +39,9 @@ function searchScreen() {
   const [isTypeFilter, setTypeFilter] = useState([]);
   const [isCategoryFilter, setCategoryFilter] = useState([]);
   const [isSeasonFilter, setSeasonFilter] = useState([]);
-  const [isFlag, setFlag] = useState("");
+  const [isTypeFlag, setTypeFlag] = useState("");
+  const [isCategoryFlag, setCategoryFlag] = useState("");
+  const [isSeasonFlag, setSeasonFlag] = useState("");
 
   const plantCollection = firebase.firestore().collection("plants");
   const typeCollection = firebase.firestore().collection("filterType");
@@ -224,54 +227,85 @@ function searchScreen() {
     { id: 11, name: "ฤดูฝน", checked: isRain, set: setRain },
   ];
 
+  const afFilterType = () => {
+    const typeArray = isPlantCollectionForFilter.filter((value) => {
+      if(value.type === isTypeFlag){
+        console.log("1")
+        return value
+      }
+      // console.log(isCategoryFlag)
+      if(isCategoryFlag !== "" && value.category.includes(isCategoryFlag)){
+        console.log("isCategoryFlag")
+        // console.log("2")
+        return value
+      }
+      if( isSeasonFlag !== "" && value.season.includes(isSeasonFlag)){
+        console.log("isSeasonFlag")
+        // console.log("3")
+        return value
+      }
+    })
+    setPlantCollection(typeArray)
+  }
+  const afFilterCategory = () => {
+    console.log(isPlantCollection)
+    const categoryArray = isPlantCollection.filter((value) => {
+      if(value.category.includes(isCategoryFlag)){
+        return value
+      }
+    })
+    setPlantCollection(categoryArray)
+  }
+
   const filterSearch = () => {
     setModalVisible(false);
     /* ....ค้นหา filter.... */
-    const plant = [...isPlantCollectionForFilter];
-    const afterTypeKitchen = plant.filter((value, index) => {
-      if (isKitchen) {
-        return value.type == "ผักสวนครัว";
-      }
-    });
-    const afterTypeFloor = plant.filter((value, index) => {
-      if (isFloor) {
-        return value.type == "ผักพื้นบ้านหรือผักป่า";
-      }
-    });
-    const afterTypeIndia = plant.filter((value, index) => {
-      if (isIndia) {
-        return value.type == "ผักสมุนไพร และเครื่องเทศ";
-      }
-    });
-    const arrayFilterType = [
-      ...afterTypeKitchen,
-      ...afterTypeFloor,
-      ...afterTypeIndia,
-    ];
-    setPlantCollection(arrayFilterType);
+      afFilterType()
+    // if(isCategoryFlag !== ""){
+    //   afFilterCategory()
+    // }
+    setTypeFlag("")
+    setCategoryFlag("")
+    setSeasonFlag("")
+    // const plant = [...isPlantCollectionForFilter];
+    // const afterTypeKitchen = plant.filter((value, index) => {
+    //   if (isKitchen) {
+    //     return value.type == "ผักสวนครัว";
+    //   }
+    // });
+    // const afterTypeFloor = plant.filter((value, index) => {
+    //   if (isFloor) {
+    //     return value.type == "ผักพื้นบ้านหรือผักป่า";
+    //   }
+    // });
+    // const afterTypeIndia = plant.filter((value, index) => {
+    //   if (isIndia) {
+    //     return value.type == "ผักสมุนไพร และเครื่องเทศ";
+    //   }
+    // });
+    // const arrayFilterType = [
+    //   ...afterTypeKitchen,
+    //   ...afterTypeFloor,
+    //   ...afterTypeIndia,
+    // ];
+    // setPlantCollection(arrayFilterType);
 
-    if (isFloor == false && isKitchen == false && isIndia == false) {
+    if (isTypeFlag == "" && isCategoryFlag == "" && isSeasonFlag == "") {
       setPlantCollection(isPlantCollectionForFilter);
-    } else {
-      const arrayFilterType = [
-        ...afterTypeKitchen,
-        ...afterTypeFloor,
-        ...afterTypeIndia,
-      ];
-      setPlantCollection(arrayFilterType);
     }
 
-    // filterList.map((item) => {
-    //   return item.set(false);
-    // })
   };
 
   const closeModal = () => {
     console.log("closeModal");
     setModalVisible(!modalVisible);
-    filterList.map((item) => {
-      return item.set(false);
-    });
+    setTypeFlag("")
+    setCategoryFlag("")
+    setSeasonFlag("")
+    setPlantCollection(isPlantCollectionForFilter);
+    // filterList.map((item) => {
+    //   return item.set(false);
+    // });
   };
 
   return (
@@ -339,13 +373,16 @@ function searchScreen() {
                     return (
                       <CheckBox
                         key={e.id}
+                        checkedIcon='dot-circle-o'
+                        uncheckedIcon='circle-o'
+                        checked={ isTypeFlag === e.name}
                         size={30}
                         title={e.name}
-                        checked={e.checked}
                         onPress={() => {
+                          setTypeFlag(e.name)
                           // toggleFilter(e.key, e.name, e.checked, "filterType");
                           // e.checked = !e.checked
-                          e.set(!e.checked);
+                          // e.set(!e.checked);
                         }}
                         containerStyle={styles.checkBoxCon}
                         textStyle={{ fontSize: 20 }}
@@ -360,19 +397,16 @@ function searchScreen() {
                     return (
                       <CheckBox
                         key={e.id}
+                        checkedIcon='dot-circle-o'
+                        uncheckedIcon='circle-o'
+                        checked={ isCategoryFlag === e.name}
                         size={30}
                         title={e.name}
-                        checked={e.checked}
                         onPress={() => {
-                          // toggleFilter(
-                          //   e.key,
-                          //   e.name,
-                          //   e.checked,
-                          //   "filterCategory"
-                          // );
+                          setCategoryFlag(e.name)
                           // toggleFilter(e.key, e.name, e.checked, "filterType");
                           // e.checked = !e.checked
-                          e.set(!e.checked);
+                          // e.set(!e.checked);
                         }}
                         containerStyle={styles.checkBoxCon}
                         textStyle={{ fontSize: 20 }}
@@ -386,13 +420,17 @@ function searchScreen() {
                   if (e.name.includes("ฤดู")) {
                     return (
                       <CheckBox
-                        key={e.key}
+                        key={e.id}
+                        checkedIcon='dot-circle-o'
+                        uncheckedIcon='circle-o'
+                        checked={ isSeasonFlag === e.name}
                         size={30}
                         title={e.name}
-                        checked={e.checked}
                         onPress={() => {
-                          // toggleFilter(e.key, e.name, e.checked, "filterSeason");
-                          e.set(!e.checked);
+                          setSeasonFlag(e.name)
+                          // toggleFilter(e.key, e.name, e.checked, "filterType");
+                          // e.checked = !e.checked
+                          // e.set(!e.checked);
                         }}
                         containerStyle={styles.checkBoxCon}
                         textStyle={{ fontSize: 20 }}
