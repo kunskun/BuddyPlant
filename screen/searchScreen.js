@@ -36,17 +36,11 @@ function searchScreen() {
   const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState(
     []
   );
-  const [isTypeFilter, setTypeFilter] = useState([]);
-  const [isCategoryFilter, setCategoryFilter] = useState([]);
-  const [isSeasonFilter, setSeasonFilter] = useState([]);
   const [isTypeFlag, setTypeFlag] = useState("");
   const [isCategoryFlag, setCategoryFlag] = useState("");
   const [isSeasonFlag, setSeasonFlag] = useState("");
 
   const plantCollection = firebase.firestore().collection("plants");
-  const typeCollection = firebase.firestore().collection("filterType");
-  const categoryCollection = firebase.firestore().collection("filterCategory");
-  const seasonCollection = firebase.firestore().collection("filterSeason");
 
   const getPlantCollection = (querySnapshot) => {
     const all_data = [];
@@ -64,53 +58,9 @@ function searchScreen() {
     setPlantCollectionForFilter(all_data);
   };
 
-  const getTypeCollection = (querySnapshot) => {
-    console.log("getTypeCollection");
-    const filter_data = [];
-    querySnapshot.forEach((res) => {
-      filter_data.push({
-        key: res.id,
-        name: res.data().name,
-        checked: res.data().checked,
-      });
-    });
-    setTypeFilter(filter_data);
-  };
-
-  const getCategoryCollection = (querySnapshot) => {
-    // console.log("getCategoryCollection");
-    const filter_data = [];
-    querySnapshot.forEach((res) => {
-      filter_data.push({
-        key: res.id,
-        name: res.data().name,
-        checked: res.data().checked,
-      });
-    });
-    setCategoryFilter(filter_data);
-  };
-
-  const getSeasonCollection = (querySnapshot) => {
-    // console.log("getSeasonCollection");
-    const filter_data = [];
-    querySnapshot.forEach((res) => {
-      filter_data.push({
-        key: res.id,
-        name: res.data().name,
-        checked: res.data().checked,
-      });
-    });
-    setSeasonFilter(filter_data);
-  };
-
   useEffect(() => {
     plantCollection.onSnapshot(getPlantCollection);
-    // typeCollection.onSnapshot(getTypeCollection);
-    // categoryCollection.onSnapshot(getCategoryCollection);
-    // seasonCollection.onSnapshot(getSeasonCollection);
-    // console.log(isTypeFilter)
     console.log("IN userEffect method");
-    // console.log(isPlantCollection)
   }, []);
 
   /*... update ข้อมูลใน firebase(ในแต่ละ filterCillection) เพื่อเปลี่ยนสถานะในหน้า filter ...*/
@@ -229,79 +179,44 @@ function searchScreen() {
 
   const afFilterType = () => {
     const typeArray = isPlantCollectionForFilter.filter((value) => {
-      if(value.type === isTypeFlag){
-        console.log("1")
-        return value
+      if (value.type === isTypeFlag) {
+        console.log("1");
+        return value;
       }
       // console.log(isCategoryFlag)
-      if(isCategoryFlag !== "" && value.category.includes(isCategoryFlag)){
-        console.log("isCategoryFlag")
+      if (isCategoryFlag !== "" && value.category.includes(isCategoryFlag)) {
+        console.log("isCategoryFlag");
         // console.log("2")
-        return value
+        return value;
       }
-      if( isSeasonFlag !== "" && value.season.includes(isSeasonFlag)){
-        console.log("isSeasonFlag")
+      if (isSeasonFlag !== "" && value.season.includes(isSeasonFlag)) {
+        console.log("isSeasonFlag");
         // console.log("3")
-        return value
+        return value;
       }
-    })
-    setPlantCollection(typeArray)
-  }
-  const afFilterCategory = () => {
-    console.log(isPlantCollection)
-    const categoryArray = isPlantCollection.filter((value) => {
-      if(value.category.includes(isCategoryFlag)){
-        return value
-      }
-    })
-    setPlantCollection(categoryArray)
-  }
+    });
+    setPlantCollection(typeArray);
+  };
 
   const filterSearch = () => {
     setModalVisible(false);
     /* ....ค้นหา filter.... */
-      afFilterType()
-    // if(isCategoryFlag !== ""){
-    //   afFilterCategory()
-    // }
-    setTypeFlag("")
-    setCategoryFlag("")
-    setSeasonFlag("")
-    // const plant = [...isPlantCollectionForFilter];
-    // const afterTypeKitchen = plant.filter((value, index) => {
-    //   if (isKitchen) {
-    //     return value.type == "ผักสวนครัว";
-    //   }
-    // });
-    // const afterTypeFloor = plant.filter((value, index) => {
-    //   if (isFloor) {
-    //     return value.type == "ผักพื้นบ้านหรือผักป่า";
-    //   }
-    // });
-    // const afterTypeIndia = plant.filter((value, index) => {
-    //   if (isIndia) {
-    //     return value.type == "ผักสมุนไพร และเครื่องเทศ";
-    //   }
-    // });
-    // const arrayFilterType = [
-    //   ...afterTypeKitchen,
-    //   ...afterTypeFloor,
-    //   ...afterTypeIndia,
-    // ];
-    // setPlantCollection(arrayFilterType);
+    afFilterType();
+    setTypeFlag("");
+    setCategoryFlag("");
+    setSeasonFlag("");
 
     if (isTypeFlag == "" && isCategoryFlag == "" && isSeasonFlag == "") {
       setPlantCollection(isPlantCollectionForFilter);
     }
-
   };
 
   const closeModal = () => {
     console.log("closeModal");
     setModalVisible(!modalVisible);
-    setTypeFlag("")
-    setCategoryFlag("")
-    setSeasonFlag("")
+    setTypeFlag("");
+    setCategoryFlag("");
+    setSeasonFlag("");
     setPlantCollection(isPlantCollectionForFilter);
     // filterList.map((item) => {
     //   return item.set(false);
@@ -373,16 +288,13 @@ function searchScreen() {
                     return (
                       <CheckBox
                         key={e.id}
-                        checkedIcon='dot-circle-o'
-                        uncheckedIcon='circle-o'
-                        checked={ isTypeFlag === e.name}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checked={isTypeFlag === e.name}
                         size={30}
                         title={e.name}
                         onPress={() => {
-                          setTypeFlag(e.name)
-                          // toggleFilter(e.key, e.name, e.checked, "filterType");
-                          // e.checked = !e.checked
-                          // e.set(!e.checked);
+                          setTypeFlag(e.name);
                         }}
                         containerStyle={styles.checkBoxCon}
                         textStyle={{ fontSize: 20 }}
@@ -397,16 +309,13 @@ function searchScreen() {
                     return (
                       <CheckBox
                         key={e.id}
-                        checkedIcon='dot-circle-o'
-                        uncheckedIcon='circle-o'
-                        checked={ isCategoryFlag === e.name}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checked={isCategoryFlag === e.name}
                         size={30}
                         title={e.name}
                         onPress={() => {
-                          setCategoryFlag(e.name)
-                          // toggleFilter(e.key, e.name, e.checked, "filterType");
-                          // e.checked = !e.checked
-                          // e.set(!e.checked);
+                          setCategoryFlag(e.name);
                         }}
                         containerStyle={styles.checkBoxCon}
                         textStyle={{ fontSize: 20 }}
@@ -421,16 +330,13 @@ function searchScreen() {
                     return (
                       <CheckBox
                         key={e.id}
-                        checkedIcon='dot-circle-o'
-                        uncheckedIcon='circle-o'
-                        checked={ isSeasonFlag === e.name}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checked={isSeasonFlag === e.name}
                         size={30}
                         title={e.name}
                         onPress={() => {
-                          setSeasonFlag(e.name)
-                          // toggleFilter(e.key, e.name, e.checked, "filterType");
-                          // e.checked = !e.checked
-                          // e.set(!e.checked);
+                          setSeasonFlag(e.name);
                         }}
                         containerStyle={styles.checkBoxCon}
                         textStyle={{ fontSize: 20 }}
