@@ -3,13 +3,19 @@ Mobile Device Programming Project
 
 # Dependencies Login and Navigation
 <ul>
+  Google
   <li>expo install expo-google-app-auth</li>
+  Firebase
   <li>expo install firebase</li>
+  Navigation
   <li>expo install @react-navigation/native</li>
   <li>expo install react-native-screens</li>
   <li>expo install @react-navigation/native-stack</li>
   <li>expo install @react-navigation/bottom-tabs</li>
   <li>expo install @expo/vector-icons</li>
+  LocalStorage
+  <li>expo install @react-native-async-storage/async-storage</li>
+  <li>expo install react-native link @react-native-async-storage/async-storage</li>
 </ul>
 
 # Dependencies each screen (Pao)
