@@ -31,7 +31,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function plantInfo({ navigation, route }) {
+function selectedInfo({ navigation, route }) {
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
   const [isShowDate, setShowDate] = useState(false);
   const [feedBack, setFeedBack] = useState("");
@@ -47,7 +47,6 @@ function plantInfo({ navigation, route }) {
   );
   const [isName, setName] = useState("");
   const [isType, setType] = useState("");
-  const [isCate, setCate] = useState("");
   const [isCategory, setCategory] = useState([]);
   const [isSeason, setSeason] = useState("");
   const [isHint, setHint] = useState("");
@@ -63,21 +62,17 @@ function plantInfo({ navigation, route }) {
   const userPlanDB = firebase.firestore().collection("user-plant");
   const userID = route.params.userID;
   const [isUserPlantKey, setUserPlantKey] = useState("");
-  const [isUPPlant_id, setUPPlant_id] = useState("");
 
   const getKeyUserPlant = (querySnapshot) => {
     const plan_data = [];
     userPlanDB.onSnapshot((value) => {
       value.forEach((res) => {
         if (res.data().user_id == userID) {
-          // console.log(res.data().user_id)
           const userPlantKey = res.id;
-          setUserPlantKey(res.id);
-          setUPPlant_id(res.data().plant_id)
+          setUserPlantKey("plant " +res.id);
           planDB.onSnapshot((value) => {
             value.forEach((res) => {
               if ((res.data().user_plant_id == userPlantKey) && (res.data().plant_id == route.params.plantID)) {
-                // console.log(res.data().user_plant_id)
                 plan_data.push({
                   key: res.id,
                   do: res.data().do,
@@ -89,6 +84,7 @@ function plantInfo({ navigation, route }) {
             setPlanCollection(plan_data);
           });
         }
+        // console.log(plan_data)
       });
     });
   };
@@ -105,7 +101,6 @@ function plantInfo({ navigation, route }) {
         setImage(res.data().image);
         setName(res.data().name);
         setType(res.data().type);
-        setCate(category)
         setCategory(splitCategory);
         setSeason(res.data().season);
         setPrepare_ground(res.data().prepare_ground);
@@ -118,8 +113,8 @@ function plantInfo({ navigation, route }) {
       } else {
         console.log("Document does not exist!!");
       }
-      getKeyUserPlant();
     });
+    getKeyUserPlant();
   }, [route.params.plantID]);
 
   const list = {
@@ -160,65 +155,25 @@ function plantInfo({ navigation, route }) {
     setFeedBack("");
   };
 
-
-  const keyUserPlant = () => {
-    console.log("keyUserPlant")
-    userPlanDB.onSnapshot( (value) => {
-      value.forEach((res) => {
-        if (res.data().plant_id == isID) {
-          setUserPlantKey(res.id);
-        }
-      });
-    });
-  };
-
   const sendDate = async () => {
     setShowDate(false);
     setSelectDate(selectDate);
-    const date = new Date();
-    userPlanDB
-      .add({
-        category_plant: isCate,
-        image: isImage,
-        name_plant: isName,
-        plant_id: isID,
-        /////recive_dateยังใช้ไม่ได้
-        recive_date: date,
-        start_date: selectDate,
-        type_plant: isType,
-        user_id: userID,
-      })
-      .then((res) => {
-        console.log("Insert User+Plant Successfully")
-        keyUserPlant();
-      });
+    console.log(nowDate);
 
+    const today = new Date();
+    const insertData = new Date(today);
+    insertData.setDate(insertData.getDate() + 2);
 
-    // for(let i = isAttend_date; i <= isRecive_range; i++){
-    //   // console.log(isAttend_date * i)
+    console.log("sendDate: " + insertData);
+    // console.log(insertData.toString());
+    // const countDate = 1
+    // const range = isRecive_range/isAttend_date
+    // for(let i = isAttend_date; i <= isRecive_range; isAttend_date){
     //   const between = i * isAttend_date
-    //   const date = new Date();
-    //   date.setDate(date.getDate() + between);
-    //   // console.log(date.toString())
-    //   if(between != isRecive_range){
-
-    //   }
-    //   else if(between >= isRecive_range){
-    //     planDB
-    //   .add({
-    //     do: "เก็บเกี่ยวผล",
-    //     plant_id: isID,
-    //     plan_date: date,
-    //     plan_time: "17:00:00",
-    //     user_plant_id: isUserPlantKey,
-    //   })
-    //   .then((res) => {
-    //     console.log("Insert Receive Date Successfully")
-    //   });
-
-    //   }
+    //   insertData.setDate(insertData.getDate() + i);
+    //   // console.log(insertData)
+    //   console.log(i)
     // }
-
     // planDB.add({
     //     do: "",
     //     name: this.state.name,
@@ -277,81 +232,6 @@ function plantInfo({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      {/* set time modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={isShowDate}
-        onRequestClose={() => {
-          setShowDate(false);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.contX}>
-              <Icon
-                name="times"
-                type="font-awesome-5"
-                iconStyle={styles.iconX}
-                onPress={() => setShowDate(false)}
-              />
-            </View>
-
-            <View style={styles.headerTextPopup}>
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: 35,
-                  fontWeight: "bold",
-                  marginBottom: 5,
-                }}
-              >
-                วันที่เพาะปลูก
-              </Text>
-              <View style={styles.dateBox}>
-                <Text
-                  style={{
-                    color: "#000",
-                    fontSize: 25,
-                    fontWeight: "bold",
-                  }}
-                >
-                  {getNewDate()}
-                </Text>
-                <Icon
-                  containerStyle={{ marginLeft: 20 }}
-                  name="calendar-alt"
-                  type="font-awesome-5"
-                  onPress={() => setDatePickerVisible(true)}
-                  color="#000"
-                  iconStyle={{ fontSize: 30 }}
-                />
-              </View>
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={(date) => handleConfirm(date)}
-                onCancel={() => setDatePickerVisible(false)}
-                minimumDate={nowDate}
-                date={nowDate}
-              />
-            </View>
-
-            <Button
-              title="ยืนยัน"
-              buttonStyle={{
-                backgroundColor: "#82ab8d",
-                width: "50%",
-                alignSelf: "center",
-                marginVertical: 9,
-              }}
-              titleStyle={{ fontSize: 20 }}
-              onPress={sendDate}
-            />
-          </View>
-        </View>
-      </Modal>
-
       {/* send feedback */}
       <Modal
         animationType="fade"
@@ -508,10 +388,7 @@ function plantInfo({ navigation, route }) {
             คำแนะนำ: {"\n"}
             <Text style={styles.textDetail}>    {isHint}</Text>
           </Text>
-          {/* show if have user */}
-
-          {/* ต้องใช้ๆ */}
-          {isUserPlantKey !== ""  && (
+          {/* show plan user */}
             <Text style={styles.headerText}>
               สิ่งที่ต้องทำ:
               {"\n"}
@@ -530,33 +407,9 @@ function plantInfo({ navigation, route }) {
                 </Text>
               ))}
             </Text>
-          )}
+
         </View>
       </ScrollView>
-
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-
-      {/* pick date button */}
-      {isUserPlantKey !== "" && (
-        <Button
-          title="เลือกเวลาเริ่มปลูก"
-          buttonStyle={styles.selectTimeBtn}
-          titleStyle={{ fontSize: 20, fontWeight: "bold" }}
-          onPress={() => {
-            setShowDate(!isShowDate);
-            setSelectDate(nowDate);
-          }}
-        />
-      )}
     </View>
   );
 }
@@ -642,4 +495,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default plantInfo;
+export default selectedInfo;

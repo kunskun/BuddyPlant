@@ -355,7 +355,7 @@ function searchScreen({ navigation, route }) {
                 containerStyle={{
                   padding: 5,
                 }}
-                onPress={() => navigation.navigate("info", { userID: "", plantID: l.key })}
+                onPress={() => navigation.navigate("info", { userID: "f141AGHQqLVCRtYTXBPq", plantID: l.key })}
               >
                 <Avatar size="large" source={{ uri: l.image }} />
                 <ListItem.Content>

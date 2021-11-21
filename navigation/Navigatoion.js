@@ -4,18 +4,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome,
-  FontAwesome5,
-} from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
 // Screen
 import ProfileScreen from "../screen/profileScreen";
 import Login from "../screen/loginScreen";
 import SearchScreen from "../screen/searchScreen";
 import PlantInfo from "../screen/plantInfo";
+import SelectedList from "../screen/selectedList";
+import SelectedInfo from "../screen/selectedInfo";
+import NotiScreen from '../screen/notiScreen'
 import { render } from "react-dom";
 
 const Stack = createNativeStackNavigator();
@@ -36,10 +34,24 @@ const searchStackNavigation = () => {
   );
 };
 
-export default function BuddyNavigator() {
-  return (
-    <NavigationContainer>
-      <BottomTab.Navigator
+const selectedStackNavigation = () => {
+    return (
+      <Stack.Navigator
+        initialRouteName="selected"
+        screenOptions={{
+          headerStyle: { backgroundColor: "#73D9E2" },
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="selected" component={SelectedList} />
+        <Stack.Screen name="selectInfo" component={SelectedInfo} />
+      </Stack.Navigator>
+    );
+  };
+
+  const tabNavigation = () => {
+    return (
+        <BottomTab.Navigator
         initialRouteName="home"
         screenOptions={{
           tabBarActiveTintColor: "#ffffff",
@@ -58,7 +70,7 @@ export default function BuddyNavigator() {
         />
         <BottomTab.Screen
           name="selected"
-          component={SearchScreen}
+          component={selectedStackNavigation}
           options={{
             tabBarIcon: ({ size, color }) => {
               return <FontAwesome5 name="leaf" size={size} color={color} />;
@@ -67,7 +79,7 @@ export default function BuddyNavigator() {
         />
         <BottomTab.Screen
           name="notification"
-          component={SearchScreen}
+          component={NotiScreen}
           options={{
             tabBarIcon: ({ size, color }) => {
               return <FontAwesome name="bell" size={size} color={color} />;
@@ -76,7 +88,7 @@ export default function BuddyNavigator() {
         />
         <BottomTab.Screen
           name="profile"
-          component={SearchScreen}
+          component={ProfileScreen}
           options={{
             tabBarIcon: ({ size, color }) => {
               return (
@@ -90,6 +102,23 @@ export default function BuddyNavigator() {
           }}
         />
       </BottomTab.Navigator>
+    );
+  };
+  
+
+export default function BuddyNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+          headerStyle: { backgroundColor: "#73D9E2" },
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="center" component={tabNavigation} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
