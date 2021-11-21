@@ -19,6 +19,10 @@ import Image from "react-native-scalable-image";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { color } from "react-native-elements/dist/helpers";
 import * as Notifications from "expo-notifications";
+import firebase from "../database/firebaseDB";
+
+import { Entypo } from '@expo/vector-icons';
+
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,7 +32,72 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function plantInfo() {
+function plantInfo( { navigation, route }) {
+  const [isUserID, setUserID] = useState("");
+  const [isPlantID, setPlantID] = useState("");
+  
+  const [isID, setID] = useState("");
+  const [isImage, setImage] = useState("https://clicxy.com/wp-content/uploads/2016/04/dummy-post-horisontal.jpg");
+  const [isName, setName] = useState("");
+  const [isType, setType] = useState("");
+  const [isCategory, setCategory] = useState("");
+  const [isSeason, setSeason] = useState("");
+  const [isHint, setHint] = useState("");
+  const [isPrepare_ground, setPrepare_ground] = useState("");
+  const [isPrepare_plant, setPrepare_plant] = useState("");
+  const [isHow_to, setHow_to] = useState("");
+  const [isAttend_date, setAttend_date] = useState(0);
+  const [isAttend_time, setAttend_time] = useState(0);
+  const [isRecive_range, setRecive_range] = useState(0);
+
+
+//   const getPlantCollection = (querySnapshot) => {
+//   const all_data = [];
+//   querySnapshot.forEach((res) => {
+//     all_data.push({
+//       key: res.id,
+//       name: res.data().name,
+//       image: res.data().image,
+//       type: res.data().type,
+//       category: res.data().category,
+//       season: res.data().season,
+//     });
+//   });
+//   setPlantCollection(all_data);
+//   setPlantCollectionForFilter(all_data);
+// };
+
+useEffect(() => {
+  // plantCollection.onSnapshot(getPlantCollection);
+  // console.log("IN userEffect method");
+  const plantID = route.params.plantID
+  const plantDoc = firebase.firestore()
+  .collection("plants")
+  .doc(plantID);
+
+  plantDoc.get().then((res) => {
+    if (res.exists) {
+      setID(res.id)
+      setImage(res.data().image)
+      setName(res.data().name)
+      setType(res.data().type)
+      setCategory(res.data().category)
+      setSeason(res.data().season)
+      setPrepare_ground(res.data().prepare_ground)
+      setPrepare_plant(res.data().prepare_plant)
+      setHow_to(res.data().how_to)
+      setAttend_date(res.data().attend_date)
+      setAttend_time(res.data().attend_time)
+      setRecive_range(res.data().recive_range)
+      setHint(res.data().hint)
+    } else {
+      console.log("Document does not exist!!");
+    }
+  });
+}, [route.params.plantID]);
+
+
+
   const list = {
     image:
       "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg",
@@ -69,7 +138,7 @@ function plantInfo() {
     if (feedBack == "") {
       console.log("none feedback");
     } else {
-      console.log("sned feedback: " + feedBack);
+      console.log("send feedback: " + feedBack);
     }
     setShowFeedBack(false);
     setFeedBack("");
@@ -90,8 +159,11 @@ function plantInfo() {
     console.log("user");
   };
 
+  // set select time to 8.00 am
   function calculateSecondsToSpecifiedDate() {
-    var Difference_In_Time = selectDate.getTime() - nowDate.getTime()
+    selectDate.setDate(selectDate.getDate() + 1);
+    selectDate.setHours(7, 0, 0);
+    var Difference_In_Time = selectDate.getTime() - nowDate.getTime();
     return Difference_In_Time;
   }
 
@@ -273,7 +345,7 @@ function plantInfo() {
             onPress: notification,
           }}
           centerComponent={{
-            text: list.name,
+            text: isName,
             style: { color: "#fff", fontSize: 30, fontWeight: "bold" },
           }}
           rightComponent={{
@@ -292,7 +364,7 @@ function plantInfo() {
         {/* Image */}
         <View style={styles.midPart}>
           <Image
-            source={{ uri: list.image }}
+            source={{ uri: isImage }}
             width={Dimensions.get("window").width}
           />
         </View>
@@ -302,7 +374,7 @@ function plantInfo() {
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text style={styles.headerText}>ชื่อ: {list.name}</Text>
+            <Text style={styles.headerText}>ชื่อ: {isName}</Text>
             <TouchableOpacity onPress={() => setShowFeedBack(true)}>
               <Icon
                 name="comment-dots"
@@ -312,11 +384,37 @@ function plantInfo() {
             </TouchableOpacity>
           </View>
           <Text style={styles.headerText}>
-            ข้อมูลเฉพะ: {"\n"}
-            <Text style={styles.textDetail}>{list.text}</Text>
+            ชนิดผัก: {"\n"}
+            <Text style={styles.textDetail}>{isType}</Text>
+          </Text>
+          <Text style={styles.headerText}>
+            ประเทภ: {"\n"}
+            <Text style={styles.textDetail}> <Entypo name="dot-single" size={24}/>{isCategory}</Text>
+          </Text>
+          <Text style={styles.headerText}>
+            ควรปลูกในฤดู: {"\n"}
+            <Text style={styles.textDetail}> <Entypo name="dot-single" size={24}/>{isSeason}</Text>
+          </Text>
+          <Text style={styles.headerText}>
+            การเตรียมดินก่อนปลูก: {"\n"}
+            <Text style={styles.textDetail}>    {isPrepare_ground}</Text>
+          </Text>
+          <Text style={styles.headerText}>
+            การเตรียมพันธุ์ก่อนปลูก: {"\n"}
+            <Text style={styles.textDetail}>    {isPrepare_plant}</Text>
+          </Text>
+          <Text style={styles.headerText}>
+            วิธีการปลูก: {"\n"}
+            <Text style={styles.textDetail}>    {isHow_to}</Text>
+          </Text>
+          <Text style={styles.headerText}>
+            คำแนะนำ: {"\n"}
+            <Text style={styles.textDetail}>    {isHint}</Text>
           </Text>
           {/* show if have user */}
-          {isUser && (
+
+          {/* ต้องใช้ๆ */}
+          {/* {isUser && (
             <Text style={styles.headerText}>
               สิ่งที่ต้องทำ:
               {"\n"}
@@ -334,7 +432,7 @@ function plantInfo() {
                 </Text>
               ))}
             </Text>
-          )}
+          )} */}
         </View>
       </ScrollView>
 

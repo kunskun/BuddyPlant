@@ -7,7 +7,6 @@ import {
   Modal,
   ScrollView,
   Alert,
-  RadioButton,
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
@@ -15,7 +14,7 @@ import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
 import firebase from "../database/firebaseDB";
 
-function searchScreen() {
+function searchScreen({ navigation, route }) {
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [isLeaf, setLeaf] = useState(false);
@@ -180,18 +179,12 @@ function searchScreen() {
   const afFilterType = () => {
     const typeArray = isPlantCollectionForFilter.filter((value) => {
       if (value.type === isTypeFlag) {
-        console.log("1");
         return value;
       }
-      // console.log(isCategoryFlag)
       if (isCategoryFlag !== "" && value.category.includes(isCategoryFlag)) {
-        console.log("isCategoryFlag");
-        // console.log("2")
         return value;
       }
       if (isSeasonFlag !== "" && value.season.includes(isSeasonFlag)) {
-        console.log("isSeasonFlag");
-        // console.log("3")
         return value;
       }
     });
@@ -246,7 +239,6 @@ function searchScreen() {
                 name="filter"
                 size={25}
                 color="white"
-                // onPress={() => setModalVisible(!modalVisible)}
               />
             }
             // เอาonPresออกมาอยู่ข้างนอกTag ICON เพราะว่าบางครั้งมันคลิ๊กโดนTag button แต่ไม่โดนTag Icon ก็เลยไม่ interantion
@@ -272,7 +264,6 @@ function searchScreen() {
                     size={25}
                     color="black"
                     onPress={() =>
-                      // setModalVisible(!modalVisible)
                       closeModal()
                     }
                   />
@@ -281,7 +272,6 @@ function searchScreen() {
             </View>
             <ScrollView style={{ width: "100%", height: "80%" }}>
               <View style={{ marginTop: 0, alignSelf: "flex-start" }}>
-                {/*... render ข้อมูลมาจาก array ที่ดึงมาจาก firebase  ---- มีการmapข้อมูลมาจาก 3 array(แต่ละ filter type)...*/}
                 <Text>ชนิด</Text>
                 {filterList.map((e) => {
                   if (e.name.includes("ผัก")) {
@@ -364,7 +354,8 @@ function searchScreen() {
                 key={l.name + i}
                 containerStyle={{
                   padding: 5,
-                }} /* onPress={() => {console.log(l.name);}} */
+                }}
+                onPress={() => navigation.navigate("info", { userID: "", plantID: l.key })}
               >
                 <Avatar size="large" source={{ uri: l.image }} />
                 <ListItem.Content>
