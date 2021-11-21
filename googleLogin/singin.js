@@ -1,8 +1,37 @@
 import * as Google from "expo-google-app-auth";
 import React, { useState } from "react";
 import firebase from "../database/firebaseDB";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function signInWithGoogleAsync() {
+    let valueInStored = "";
+    const storeData = async (value) => {
+        try {
+          await AsyncStorage.setItem('mail', value)
+          console.log("add success value = "+ value);
+        } catch (e) {
+          // saving error
+          console.log(e);
+        }
+    }
+
+    const getData = async () => {
+        try {
+          const value = await AsyncStorage.getItem('mail')
+          console.log("found = " + value);
+          if(value !== null) {
+            // value previously stored
+            console.log("value = " + value);  
+          }
+          valueInStored = value;
+          console.log(valueInStored);
+        } catch(e) {
+          // error reading value
+          console.log(e);
+        }
+    }
+
+    getData()
     
     try {
         const userCollection = firebase.firestore().collection('users');
@@ -20,48 +49,48 @@ export async function signInWithGoogleAsync() {
         if (result.type === "success") {
             let list_users = [];
             let found_account = false;
-
-            await userCollection.get().then(async items => {
-                await items.forEach(res => {
-                    const { email, name, image, isLogin } = res.data();
-                    console.log("Email: "+email);
+            
+            if(!valueInStored){
+                await userCollection.get().then(async items => {
+                    await items.forEach(res => {
+                        const { email, name, image, isLogin } = res.data();
+                        console.log("Email: "+email);
+                        
+                        if(email === rest_email){
+                            userCollection.doc(res.id).update({
+                                isLogin: true
+                            })
+                            found_account = true;
+                            console.log("Update Success");
+                        } 
+                        
+                        list_users.push({
+                            user_id: res.id,
+                            email: email,
+                            name: name,
+                            image: image,
+                            isLogin: isLogin
+                        });
+                    }); 
                     
-                    if(email === rest_email){
-                        userCollection.doc(res.id).update({
+                    if (!found_account) {
+                        userCollection.add({
+                            email: rest_email,
+                            name: rest_name,
+                            image: rest_image,
+                            role: "user",
                             isLogin: true
                         })
-                        found_account = true;
-                        console.log("Update Success");
-                    } 
-                    
-                    list_users.push({
-                        user_id: res.id,
-                        email: email,
-                        name: name,
-                        image: image,
-                        isLogin: isLogin
-                    });
-                }); 
-                
-                if (!found_account) {
-                    userCollection.add({
-                        email: rest_email,
-                        name: rest_name,
-                        image: rest_image,
-                        role: "user",
-                        isLogin: true
-                    })
-                    console.log("Add Success");
-                }
-
-                list_users.forEach(items => {
-                    if (items.email.includes(rest_email)) {
-                        // sent item out with props
-                        console.log(rest_email + " have in list");
+                        console.log("Add Success");
                     }
+                    storeData(rest_email)
                 })
-            })
-
+            } 
+            // list_users.forEach(items => {
+            //     if (items.email.includes(rest_email)) {                        
+            //         console.log(rest_email + " have in list");     
+            //     }
+            // })
             return result;
         } else {
             return { cancelled: true };
