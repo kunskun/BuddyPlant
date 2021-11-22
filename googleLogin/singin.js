@@ -15,6 +15,16 @@ export async function signInWithGoogleAsync() {
         }
     }
 
+    const storeID = async (value) => {
+        try {
+          await AsyncStorage.setItem('id', value)
+          console.log("add success id = "+ value);
+        } catch (e) {
+          // saving error
+          console.log(e);
+        }
+    }
+
     const getData = async () => {
         try {
           const value = await AsyncStorage.getItem('mail')
@@ -62,6 +72,7 @@ export async function signInWithGoogleAsync() {
                             })
                             found_account = true;
                             console.log("Update Success");
+                            storeID(res.id)
                         } 
                         
                         list_users.push({
@@ -80,17 +91,20 @@ export async function signInWithGoogleAsync() {
                             image: rest_image,
                             role: "user",
                             isLogin: true
+                        }).then(async res => {
+                            storeID(res.id)
                         })
                         console.log("Add Success");
                     }
                     storeData(rest_email)
                 })
+
             } 
-            // list_users.forEach(items => {
-            //     if (items.email.includes(rest_email)) {                        
-            //         console.log(rest_email + " have in list");     
-            //     }
-            // })
+            // await userCollection.get().then(async items => {
+            //     await items.forEach((res) => {
+
+            //     })        
+            // }
             return result;
         } else {
             return { cancelled: true };
@@ -99,7 +113,3 @@ export async function signInWithGoogleAsync() {
         return { error: true };
     }
 }
-
-
-// Create a reference to the cities collection import { collection, query, where } from "firebase/firestore"; const citiesRef = collection(db, "cities"); 
-// Create a query against the collection. const q = query(citiesRef, where("state", "==", "CA"));

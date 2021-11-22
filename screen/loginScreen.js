@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   StyleSheet,
@@ -9,20 +9,42 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { signInWithGoogleAsync } from "../googleLogin/singin";
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-class Login extends Component {
-  constructor() {
-    super();
+export default function Login( {navigation  }) {
+  // const [isLogin, setIsLogin] = useState(false);
+  // const [valueInStored, setValueInStored] = useState('');
+
+  // useEffect(async () => {
+  //   await getData()
+
+  //   if(valueInStored !== null) setIsLogin(true)
+  //   else setIsLogin(false)
+  //   console.log("useEffect LOgin Page " + valueInStored);
+  // })
+
+  const getData = async() => {
+    try {
+      const value = await AsyncStorage.getItem('mail')
+
+      if(value !== null) setIsLogin(true)
+      else setIsLogin(false) 
+
+      setValueInStored(value);
+      console.log("not null "+isLogin);
+      console.log("val "+valueInStored);      
+    } catch(e) {
+      console.log(e);
+    }
   }
 
-  render() {
     return (
       <View style={styles.container}>
-        <View style={{marginBottom: '5%'}}>
+        <View style={{ marginBottom: "5%" }}>
           <FontAwesome name="circle" size={230} color="#97ED7E" />
-          <View style={{position: 'absolute', left: 15, top: 25}}>
+          <View style={{ position: "absolute", left: 15, top: 25 }}>
             <FontAwesome5 name="seedling" size={170} color="#234612" />
           </View>
         </View>
@@ -32,7 +54,10 @@ class Login extends Component {
 
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => signInWithGoogleAsync()}
+          onPress={async () => {
+            await signInWithGoogleAsync();
+            navigation.navigate("center");
+          }}
         >
           <Image
             style={
@@ -47,7 +72,7 @@ class Login extends Component {
       </View>
     );
   }
-}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -71,4 +96,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
