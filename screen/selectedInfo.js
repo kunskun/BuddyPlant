@@ -239,10 +239,10 @@ function selectedInfo({ navigation, route }) {
       {/* logo app */}
       <View style={{ backgroundColor: "#2C7B11", width: "100%", height: 50, zIndex: 1}}>
         <View style={{ marginTop: 35, width: "100%", alignItems: "center",}}>
-          <View opacity={0.3}>
+          <View opacity={0.3} style={{ position: "absolute" }}>
             <FontAwesome5 name="seedling" size={40} color="#ffffff" />
           </View>
-          <View style={{ position: "absolute", top: 10 }}>
+          <View style={{ position: "absolute", top: 10}}>
             <Image source={require("../assets/logoText2.png")} />
           </View>
         </View>
