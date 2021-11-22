@@ -66,6 +66,7 @@ class profileScreen extends Component {
     async removeValue () {
         try {
           await AsyncStorage.removeItem('mail')
+          await AsyncStorage.removeItem('id')
         } catch(e) {
           // remove error
         }
