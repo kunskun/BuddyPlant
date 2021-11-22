@@ -24,6 +24,11 @@ Mobile Device Programming Project
   <li>expo install expo-notifications</li>
 </ul>
 
+# If error (Optional)
+<ul>
+  <li>expo install react-native-gesture-handler</li>
+</ul>
+
 # Task to do
 <ul>
   <li>Google Login <span>/almost done</span></li>
