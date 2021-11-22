@@ -119,6 +119,60 @@ export default function BuddyNavigator() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="center" component={tabNavigation} />
       </Stack.Navigator>
+
+{/* <BottomTab.Navigator
+        initialRouteName="home"
+        screenOptions={{
+          tabBarActiveTintColor: "#ffffff",
+          tabBarStyle: { backgroundColor: "#39864B" },
+          headerShown: false,
+        }}
+      >
+        <BottomTab.Screen
+          name="home"
+          component={searchStackNavigation}
+          options={{
+            tabBarIcon: ({ size, color }) => {
+              return <Ionicons name="ios-home" size={size} color={color} />;
+            },
+          }}
+        />
+        <BottomTab.Screen
+          name="selected"
+          component={selectedStackNavigation}
+          options={{
+            tabBarIcon: ({ size, color }) => {
+              return <FontAwesome5 name="leaf" size={size} color={color} />;
+            },
+          }}
+        />
+        <BottomTab.Screen
+          name="notification"
+          component={NotiScreen}
+          options={{
+            tabBarIcon: ({ size, color }) => {
+              return <FontAwesome name="bell" size={size} color={color} />;
+            },
+          }}
+        />
+        <BottomTab.Screen
+          name="profile"
+          component={ProfileScreen}
+          options={{
+            tabBarIcon: ({ size, color }) => {
+              return (
+                <MaterialCommunityIcons
+                  name="account"
+                  size={size}
+                  color={color}
+                />
+              );
+            },
+          }}
+        />
+      </BottomTab.Navigator> */}
+
+
     </NavigationContainer>
   );
 }

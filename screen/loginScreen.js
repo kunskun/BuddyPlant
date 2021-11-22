@@ -9,53 +9,31 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { signInWithGoogleAsync } from "../googleLogin/singin";
-import firebase from "../database/firebaseDB";
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+
 
 class Login extends Component {
   constructor() {
     super();
-    // this.userCollection = firebase.firestore().collection("users");
-    this.state = {
-      key: "",
-      fname: "",
-      lname: "",
-      email: "",
-      picture: "",
-    };
   }
-
-  getCollection = (querySnapshot) => {
-    querySnapshot.forEach((res) => {
-      if (res.id === this.state.key) return res.id;
-      const { firstname, lastname, picture, email } = res.data();
-      console.log("Login "+ res.data())
-      this.setState({
-        fname: firstname,
-        lname: lastname,
-        picture: picture,
-        email: email,
-      });
-    });
-    // console.log("user: ", this.state.fname);
-  };
 
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={{ width: 200, height: 200, marginBottom: "5%" }}
-          source={require("../assets/favicon.png")}
-        />
+        <View style={{marginBottom: '5%'}}>
+          <FontAwesome name="circle" size={230} color="#97ED7E" />
+          <View style={{position: 'absolute', left: 15, top: 25}}>
+            <FontAwesome5 name="seedling" size={170} color="#234612" />
+          </View>
+        </View>
 
         <Image source={require("../assets/Buddy.png")} />
         <Image source={require("../assets/Plant.png")} />
 
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={async () => {
-            await signInWithGoogleAsync();
-            this.props.navigation.navigate("center");
-          }}
+          onPress={async () => { await signInWithGoogleAsync();
+          this.props.navigation.navigate("center") }}
         >
           <Image
             style={
@@ -95,4 +73,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-

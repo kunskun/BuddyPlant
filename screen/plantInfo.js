@@ -67,17 +67,19 @@ function plantInfo({ navigation, route }) {
 
   const getKeyUserPlant = (querySnapshot) => {
     const plan_data = [];
-    userPlanDB.onSnapshot((value) => {
-      value.forEach((res) => {
+
+    // userPlanDB.onSnapshot((value) => {
+      querySnapshot.forEach((res) => {
         if (res.data().user_id == userID) {
-          // console.log(res.data().user_id)
           const userPlantKey = res.id;
+          const userPlant_PlantID = res.data().plant_id
           setUserPlantKey(res.id);
           setUPPlant_id(res.data().plant_id)
           planDB.onSnapshot((value) => {
             value.forEach((res) => {
-              if ((res.data().user_plant_id == userPlantKey) && (res.data().plant_id == route.params.plantID)) {
-                // console.log(res.data().user_plant_id)
+              if(res.data().user_plant_id == userPlantKey){
+                setUserPlantKey(userPlantKey)              }
+              if ((res.data().user_plant_id == userPlantKey) && (userPlant_PlantID == isID)) {                
                 plan_data.push({
                   key: res.id,
                   do: res.data().do,
@@ -87,10 +89,11 @@ function plantInfo({ navigation, route }) {
               }
             });
             setPlanCollection(plan_data);
+            setUserPlantKey("")
           });
         }
       });
-    });
+    // });
   };
 
   useEffect(() => {
@@ -118,7 +121,7 @@ function plantInfo({ navigation, route }) {
       } else {
         console.log("Document does not exist!!");
       }
-      getKeyUserPlant();
+      // userPlanDB.onSnapshot(getKeyUserPlant);
     });
   }, [route.params.plantID]);
 
@@ -173,6 +176,8 @@ function plantInfo({ navigation, route }) {
   };
 
   const sendDate = async () => {
+    userPlanDB.onSnapshot(getKeyUserPlant);
+    console.log("Plant key :"+isUserPlantKey)
     setShowDate(false);
     setSelectDate(selectDate);
     const date = new Date();
@@ -194,30 +199,31 @@ function plantInfo({ navigation, route }) {
       });
 
 
-    // for(let i = isAttend_date; i <= isRecive_range; i++){
-    //   // console.log(isAttend_date * i)
-    //   const between = i * isAttend_date
-    //   const date = new Date();
-    //   date.setDate(date.getDate() + between);
-    //   // console.log(date.toString())
-    //   if(between != isRecive_range){
+    for(let i = isAttend_date; i <= isRecive_range; i++){
+      // console.log(isAttend_date * i)
+      const between = i * isAttend_date
+      const date = new Date();
+      date.setDate(date.getDate() + between);
+      // console.log(date.toString())
+      if(between != isRecive_range){
 
-    //   }
-    //   else if(between >= isRecive_range){
-    //     planDB
-    //   .add({
-    //     do: "เก็บเกี่ยวผล",
-    //     plant_id: isID,
-    //     plan_date: date,
-    //     plan_time: "17:00:00",
-    //     user_plant_id: isUserPlantKey,
-    //   })
-    //   .then((res) => {
-    //     console.log("Insert Receive Date Successfully")
-    //   });
+      }
+      else if(between >= isRecive_range){
+        console.log("SSSSSS " + isUserPlantKey)
+      //   planDB
+      // .add({
+      //   do: "เก็บเกี่ยวผล",
+      //   plant_id: isID,
+      //   plan_date: date,
+      //   plan_time: "17:00:00",
+      //   user_plant_id: isUserPlantKey,
+      // })
+      // .then((res) => {
+      //   console.log("Insert Receive Date Successfully")
+      // });
+      }
 
-    //   }
-    // }
+    }
 
     // planDB.add({
     //     do: "",
@@ -546,7 +552,7 @@ function plantInfo({ navigation, route }) {
       {/* for test */}
 
       {/* pick date button */}
-      {isUserPlantKey !== "" && (
+      {/* {isUserPlantKey !== "" && ( */}
         <Button
           title="เลือกเวลาเริ่มปลูก"
           buttonStyle={styles.selectTimeBtn}
@@ -556,7 +562,7 @@ function plantInfo({ navigation, route }) {
             setSelectDate(nowDate);
           }}
         />
-      )}
+      {/* )} */}
     </View>
   );
 }
