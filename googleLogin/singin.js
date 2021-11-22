@@ -18,13 +18,13 @@ export async function signInWithGoogleAsync() {
     const getData = async () => {
         try {
           const value = await AsyncStorage.getItem('mail')
-          console.log("found = " + value);
-          if(value !== null) {
-            // value previously stored
-            console.log("value = " + value);  
-          }
+        //   console.log("found = " + value);
+        //   if(value !== null) {
+        //     // value previously stored
+        //     console.log("value = " + value);  
+        //   }
           valueInStored = value;
-          console.log(valueInStored);
+        //   console.log(valueInStored);
         } catch(e) {
           // error reading value
           console.log(e);

@@ -5,6 +5,8 @@ import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-n
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Input } from "react-native-elements";
 import firebase from '../database/firebaseDB';
+import { signInWithGoogleAsync } from "../googleLogin/singin";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
 class profileScreen extends Component {
     constructor(props) {
@@ -18,6 +20,28 @@ class profileScreen extends Component {
             localStorage: "",
             editProfile: false,
         }
+    }
+
+    async login () {
+        await signInWithGoogleAsync()
+        const userCollection = firebase.firestore().collection("users");
+        await userCollection.onSnapshot(async items => {
+            await this.getData()
+            items.forEach(res => {
+                const { email, name, image, isLogin } = res.data();
+                console.log("start login " + email);
+                if(email === this.state.localStorage){
+                    this.setState({
+                        user_id: res.id,
+                        name: name,
+                        email: email,
+                        image: image,
+                        isLogin: isLogin
+                    })
+                }
+                
+            });
+        });
     }
 
     async logout () {
@@ -110,68 +134,89 @@ class profileScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.header}>Profile</Text>
-                <View>
-                    {   
-                        this.state.image ? 
-                        <Image source={{uri: this.state.image}} 
-                            style={styles.userImg}/> 
-                        : 
-                        null
-                    }
+                {/* logo app */}
+                <View opacity={0.3}>
+                    <FontAwesome5 name="seedling" size={40} color="#ffffff"/>
                 </View>
-                <View style={{alignItems: 'flex-start', width: 275}}>
-                    <Text style={styles.title}>Username</Text>
-                    {   
-                        !this.state.editProfile ? 
-                        <Text style={styles.text}>{ this.state.name }</Text>
-                        : 
-                        <>
-                            <Input
-                                placeholder={this.state.name}
-                                value={this.state.name}
-                                onChangeText={(val) => this.inputValue(val, "name")}
-                            />
-                        </>
-                    }
-                    
-                    <Text style={styles.title}>E-mail</Text>
-                    <Text style={styles.text}>{ this.state.email }</Text>
+                <View style={{position: 'absolute',top: 10}}>
+                    <Image source={require("../assets/logoText.png")} />
                 </View>
-                <View style={{width: 275, marginTop: '5%'}}>
-                    {
-                        !this.state.editProfile ? 
-                        <>
-                            <TouchableOpacity 
-                                style={styles.btn1}
-                                onPress={() => this.setState({editProfile: !this.state.editProfile})}
-                                >
-                                <Text style={styles.textBtn}>EDIT PROFILE</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity 
-                            style={styles.btn2}
-                            onPress={() => this.logout()}
-                            >    
-                                <Text style={styles.textBtn}>LOGOUT</Text>
-                            </TouchableOpacity>
-                        </>
-                        : 
-                        <TouchableOpacity 
-                                style={styles.btn2}
-                                onPress={() => this.updateName()}
-                                >
-                                <Text style={styles.textBtn}>SAVE</Text>
-                            </TouchableOpacity>
-                    }
-                </View>
+                
+                {/* content */}
+                {
+                    this.state.isLogin ?
+                    <>
+                        <Text style={styles.header}>Profile</Text>
+                        <View>
+                            {   
+                                this.state.image ? 
+                                <Image source={{uri: this.state.image}} 
+                                    style={styles.userImg}/> 
+                                    : 
+                                null
+                            }
+                        </View>
+                        <View style={{alignItems: 'flex-start', width: 275}}>
+                            <Text style={styles.title}>Username</Text>
+                            {   
+                                !this.state.editProfile ? 
+                                <Text style={styles.text}>{ this.state.name }</Text>
+                                : 
+                                <>
+                                    <Input
+                                        placeholder={this.state.name}
+                                        value={this.state.name}
+                                        onChangeText={(val) => this.inputValue(val, "name")}
+                                        />
+                                </>
+                            }
+                            
+                            <Text style={styles.title}>E-mail</Text>
+                            <Text style={styles.text}>{ this.state.email }</Text>
+                        </View>
+                        <View style={{width: 275, marginTop: '5%'}}>
+                            {
+                                !this.state.editProfile ? 
+                                <>
+                                    <TouchableOpacity 
+                                        style={styles.btn1}
+                                        onPress={() => this.setState({editProfile: !this.state.editProfile})}
+                                        >
+                                        <Text style={styles.textBtn}>EDIT PROFILE</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity 
+                                        style={styles.btn2}
+                                        onPress={() => this.logout()}
+                                        >    
+                                        <Text style={styles.textBtn}>LOGOUT</Text>
+                                    </TouchableOpacity>
+                                </>
+                                : 
+                                <TouchableOpacity 
+                                    style={styles.btn2}
+                                    onPress={() => this.updateName()}
+                                    >
+                                    <Text style={styles.textBtn}>SAVE</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
+                    </>
+                    :
+                    <TouchableOpacity 
+                        style={styles.btn3}
+                        onPress={() => this.login()}
+                    >    
+                        <Text style={styles.textBtn}>LOGIN</Text>
+                    </TouchableOpacity>
+                }
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+    container: {
+        flex: 1,
     backgroundColor: '#8BBA8C',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -180,7 +225,6 @@ const styles = StyleSheet.create({
       fontSize: 48,
     //   fontFamily: 'Quicksand',
       fontWeight: 'bold',
-      marginTop: '10%',
       marginBottom: '10%',
     //   alignItems: 'center',
   },
@@ -201,6 +245,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   btn2: {
+    borderRadius: 50, 
+    overflow:'hidden',
+    height: 45,
+    backgroundColor: 'black',
+    marginTop: '7%',
+    justifyContent: 'center'
+  },
+  btn3: {
+    width: 275,
     borderRadius: 50, 
     overflow:'hidden',
     height: 45,
