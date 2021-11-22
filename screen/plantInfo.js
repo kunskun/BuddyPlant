@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  // Image
 } from "react-native";
 // expo install react-native-elements
 // expo install react-native-safe-area-context
@@ -22,6 +23,8 @@ import * as Notifications from "expo-notifications";
 import firebase from "../database/firebaseDB";
 
 import { Entypo } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -283,6 +286,15 @@ function plantInfo({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      {/* logo app */}
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
       {/* set time modal */}
       <Modal
         animationType="fade"
@@ -575,7 +587,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   topPart: {
-    marginTop: 70,
+    marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,

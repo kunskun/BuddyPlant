@@ -7,12 +7,15 @@ import {
   Modal,
   ScrollView,
   Alert,
+  Image
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
 import firebase from "../database/firebaseDB";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 function selectedList({ navigation, route }) {
   const [search, setSearch] = useState("");
@@ -69,6 +72,15 @@ function selectedList({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      {/* logo app */}
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
       <View style={styles.topPart}>
         <Text style={styles.headFont}>Selected List</Text>
       </View>
@@ -113,7 +125,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   topPart: {
-    marginTop: 50,
+    marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,

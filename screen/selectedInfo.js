@@ -20,6 +20,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { color } from "react-native-elements/dist/helpers";
 import * as Notifications from "expo-notifications";
 import firebase from "../database/firebaseDB";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 import { Entypo } from "@expo/vector-icons";
 
@@ -195,10 +197,12 @@ function selectedInfo({ navigation, route }) {
   };
 
   const notification = () => {
+    navigation.navigate("notification")
     console.log("notification");
   };
 
   const user = () => {
+    navigation.navigate("profile")
     console.log("user");
   };
 
@@ -232,6 +236,15 @@ function selectedInfo({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      {/* logo app */}
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
       {/* send feedback */}
       <Modal
         animationType="fade"
@@ -422,7 +435,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   topPart: {
-    marginTop: 70,
+    marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,

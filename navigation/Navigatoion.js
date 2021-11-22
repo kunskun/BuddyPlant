@@ -55,6 +55,7 @@ const selectedStackNavigation = () => {
         initialRouteName="home"
         screenOptions={{
           tabBarActiveTintColor: "#ffffff",
+          tabBarInactiveTintColor: "#97ED7E",
           tabBarStyle: { backgroundColor: "#39864B" },
           headerShown: false,
         }}

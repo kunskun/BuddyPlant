@@ -135,11 +135,13 @@ class profileScreen extends Component {
         return (
             <View style={styles.container}>
                 {/* logo app */}
+                <View style={{marginTop: 35, width: "100%", alignItems: "center"}}>
                 <View opacity={0.3}>
                     <FontAwesome5 name="seedling" size={40} color="#ffffff"/>
                 </View>
                 <View style={{position: 'absolute',top: 10}}>
                     <Image source={require("../assets/logoText.png")} />
+                </View>
                 </View>
                 
                 {/* content */}

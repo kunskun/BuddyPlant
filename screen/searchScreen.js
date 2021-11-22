@@ -7,12 +7,16 @@ import {
   Modal,
   ScrollView,
   Alert,
+  Image
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
 import firebase from "../database/firebaseDB";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 function searchScreen({ navigation, route }) {
   const [search, setSearch] = useState("");
@@ -40,6 +44,26 @@ function searchScreen({ navigation, route }) {
   const [isSeasonFlag, setSeasonFlag] = useState("");
 
   const plantCollection = firebase.firestore().collection("plants");
+  const [valueInStored, setValueInStored] = useState("");
+
+  const getData = async () => {
+    const email = [];
+    try {
+      const value = await AsyncStorage.getItem("mail");
+      console.log("AAAAA = " + value);
+      // if(value !== null) {
+      //   // value previously stored
+      //   console.log("value = " + value);
+      // }
+      email.push(value);
+      // setValueInStored(value);
+      console.log(valueInStored);
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+    setValueInStored(email);
+  };
 
   const getPlantCollection = (querySnapshot) => {
     const all_data = [];
@@ -57,9 +81,11 @@ function searchScreen({ navigation, route }) {
     setPlantCollectionForFilter(all_data);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
+    await getData();
     plantCollection.onSnapshot(getPlantCollection);
     console.log("IN userEffect method");
+    console.log("This " + valueInStored);
   }, []);
 
   /*... update ข้อมูลใน firebase(ในแต่ละ filterCillection) เพื่อเปลี่ยนสถานะในหน้า filter ...*/
@@ -218,6 +244,16 @@ function searchScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      {/* logo app */}
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
+      
       <View style={styles.topPart}>
         <View style={{ width: "75%" }}>
           <SearchBar
@@ -234,13 +270,7 @@ function searchScreen({ navigation, route }) {
         </View>
         <Pressable style={styles.filterButton}>
           <Button
-            icon={
-              <Icon
-                name="filter"
-                size={25}
-                color="white"
-              />
-            }
+            icon={<Icon name="filter" size={25} color="white" />}
             // เอาonPresออกมาอยู่ข้างนอกTag ICON เพราะว่าบางครั้งมันคลิ๊กโดนTag button แต่ไม่โดนTag Icon ก็เลยไม่ interantion
             onPress={() => setModalVisible(!modalVisible)}
           />
@@ -263,9 +293,7 @@ function searchScreen({ navigation, route }) {
                     name="times"
                     size={25}
                     color="black"
-                    onPress={() =>
-                      closeModal()
-                    }
+                    onPress={() => closeModal()}
                   />
                 }
               />
@@ -355,7 +383,12 @@ function searchScreen({ navigation, route }) {
                 containerStyle={{
                   padding: 5,
                 }}
-                onPress={() => navigation.navigate("info", { userID: "f141AGHQqLVCRtYTXBPq", plantID: l.key })}
+                onPress={() =>
+                  navigation.navigate("info", {
+                    userID: "f141AGHQqLVCRtYTXBPq",
+                    plantID: l.key,
+                  })
+                }
               >
                 <Avatar size="large" source={{ uri: l.image }} />
                 <ListItem.Content>
@@ -378,7 +411,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   topPart: {
-    marginTop: 70,
+    marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,
