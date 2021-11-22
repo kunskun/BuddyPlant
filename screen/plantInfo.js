@@ -68,6 +68,8 @@ function plantInfo({ navigation, route }) {
   const [isUserPlantKey, setUserPlantKey] = useState("");
   const [isUPPlant_id, setUPPlant_id] = useState("");
 
+  let visibleBtn = true;
+
   const getKeyUserPlant = (querySnapshot) => {
     const plan_data = [];
 
@@ -76,18 +78,23 @@ function plantInfo({ navigation, route }) {
         if (res.data().user_id == userID) {
           const userPlantKey = res.id;
           const userPlant_PlantID = res.data().plant_id
+          if( res.data().plant_id == isID ){
+            visibleBtn = false;
+          }
+          if( res.data().plant_id == isID ){
+          }
           setUserPlantKey(res.id);
           setUPPlant_id(res.data().plant_id)
           planDB.onSnapshot((value) => {
-            value.forEach((res) => {
-              if(res.data().user_plant_id == userPlantKey){
+            value.forEach((plan) => {
+              if(plan.data().user_plant_id == userPlantKey){
                 setUserPlantKey(userPlantKey)              }
-              if ((res.data().user_plant_id == userPlantKey) && (userPlant_PlantID == isID)) {                
+              if ((plan.data().user_plant_id == userPlantKey) && (userPlant_PlantID == isID)) {                
                 plan_data.push({
-                  key: res.id,
-                  do: res.data().do,
-                  plan_date: res.data().plan_date,
-                  plan_time: res.data().plan_time,
+                  key: plan.id,
+                  do: plan.data().do,
+                  plan_date: plan.data().plan_date,
+                  plan_time: plan.data().plan_time,
                 });
               }
             });
@@ -165,25 +172,22 @@ function plantInfo({ navigation, route }) {
     setShowFeedBack(false);
     setFeedBack("");
   };
-
-
-  const keyUserPlant = () => {
-    console.log("keyUserPlant")
-    userPlanDB.onSnapshot( (value) => {
-      value.forEach((res) => {
-        if (res.data().plant_id == isID) {
-          setUserPlantKey(res.id);
-        }
-      });
-    });
-  };
+  
 
   const sendDate = async () => {
+    console.log("Be State : " + visibleBtn)
+    visibleBtn = false
+    console.log("Af State : " + visibleBtn)
     userPlanDB.onSnapshot(getKeyUserPlant);
-    console.log("Plant key :"+isUserPlantKey)
+    console.log("Plant key :"+ isUserPlantKey)
     setShowDate(false);
     setSelectDate(selectDate);
     const date = new Date();
+
+  //   await userPlanDB.get().then(async items => {
+
+  // })
+
     userPlanDB
       .add({
         category_plant: isCate,
@@ -198,16 +202,13 @@ function plantInfo({ navigation, route }) {
       })
       .then((res) => {
         console.log("Insert User+Plant Successfully")
-        keyUserPlant();
       });
 
 
     for(let i = isAttend_date; i <= isRecive_range; i++){
-      // console.log(isAttend_date * i)
       const between = i * isAttend_date
       const date = new Date();
       date.setDate(date.getDate() + between);
-      // console.log(date.toString())
       if(between != isRecive_range){
 
       }
@@ -227,24 +228,6 @@ function plantInfo({ navigation, route }) {
       }
 
     }
-
-    // planDB.add({
-    //     do: "",
-    //     name: this.state.name,
-    //     gpa: this.state.gpa,
-    //   })
-    //   .then((res) => {
-    //     this.setState({
-    //       id: "",
-    //       name: "",
-    //       gpa: "",
-    //     });
-    //     this.props.navigation.navigate("Student List")
-    //     // Alert.alert(
-    //     //   "Adding Alert",
-    //     //   "New subject was added!!"
-    //     // );
-    //   });
     await schedulePushNotification();
   };
 
@@ -494,7 +477,7 @@ function plantInfo({ navigation, route }) {
             <Text style={styles.textDetail}>{isType}</Text>
           </Text>
           <Text style={styles.headerText}>
-            ประเทภ:
+            ประเภท:
             {isCategory.map((l, i) => (
                 <Text style={styles.textDetail}>
                 {"\n"}{" "}
@@ -564,7 +547,7 @@ function plantInfo({ navigation, route }) {
       {/* for test */}
 
       {/* pick date button */}
-      {/* {isUserPlantKey !== "" && ( */}
+      {visibleBtn == true && (
         <Button
           title="เลือกเวลาเริ่มปลูก"
           buttonStyle={styles.selectTimeBtn}
@@ -574,7 +557,7 @@ function plantInfo({ navigation, route }) {
             setSelectDate(nowDate);
           }}
         />
-      {/* )} */}
+       )} 
     </View>
   );
 }

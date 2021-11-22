@@ -43,7 +43,16 @@ function selectedList({ navigation, route }) {
   const [isSeasonFlag, setSeasonFlag] = useState("");
 
   const userPlanCollection = firebase.firestore().collection("user-plant");
-  const userID = "f141AGHQqLVCRtYTXBPq";
+  let userID = "";
+
+  const getData = async () => {
+    try {
+      userID = await AsyncStorage.getItem("id");
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
 
   const getPlantCollection = (querySnapshot) => {
     const all_data = [];
@@ -65,7 +74,8 @@ function selectedList({ navigation, route }) {
     setPlantCollectionForFilter(all_data);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
+    await getData()
     userPlanCollection.onSnapshot(getPlantCollection);
     console.log("IN userEffect method");
   }, []);
@@ -95,7 +105,7 @@ function selectedList({ navigation, route }) {
                 }}
                 onPress={() =>
                   navigation.navigate("selectInfo", {
-                    userID: "f141AGHQqLVCRtYTXBPq",
+                    userID: userID,
                     plantID: l.id,
                   })
                 }

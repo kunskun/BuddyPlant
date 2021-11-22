@@ -7,7 +7,7 @@ import {
   Modal,
   ScrollView,
   Alert,
-  Image
+  Image,
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
@@ -15,8 +15,13 @@ import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
 import firebase from "../database/firebaseDB";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 
 function searchScreen({ navigation, route }) {
   const [search, setSearch] = useState("");
@@ -36,9 +41,7 @@ function searchScreen({ navigation, route }) {
 
   //////////////////////////////////////////////////////
   const [isPlantCollection, setPlantCollection] = useState([]);
-  const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState(
-    []
-  );
+  const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState([]);
   const [isTypeFlag, setTypeFlag] = useState("");
   const [isCategoryFlag, setCategoryFlag] = useState("");
   const [isSeasonFlag, setSeasonFlag] = useState("");
@@ -46,23 +49,15 @@ function searchScreen({ navigation, route }) {
   const plantCollection = firebase.firestore().collection("plants");
   const [valueInStored, setValueInStored] = useState("");
 
+  let userID = ""
+
   const getData = async () => {
-    const email = [];
     try {
-      const value = await AsyncStorage.getItem("mail");
-      console.log("AAAAA = " + value);
-      // if(value !== null) {
-      //   // value previously stored
-      //   console.log("value = " + value);
-      // }
-      email.push(value);
-      // setValueInStored(value);
-      console.log(valueInStored);
+      userID = await AsyncStorage.getItem("id");
     } catch (e) {
       // error reading value
       console.log(e);
     }
-    setValueInStored(email);
   };
 
   const getPlantCollection = (querySnapshot) => {
@@ -84,7 +79,7 @@ function searchScreen({ navigation, route }) {
   useEffect(async () => {
     await getData();
     plantCollection.onSnapshot(getPlantCollection);
-    console.log("IN userEffect method");
+    // console.log("IN userEffect method");
     console.log("This " + valueInStored);
   }, []);
 
@@ -99,87 +94,6 @@ function searchScreen({ navigation, route }) {
       })
       .then(() => {});
   };
-
-  const list = [
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-  ];
 
   const filterList = [
     { id: 1, name: "ประเภทกินใบ", checked: isLeaf, set: setLeaf },
@@ -230,6 +144,16 @@ function searchScreen({ navigation, route }) {
     }
   };
 
+  const dataSearch = (search) => {
+    const search_data = [];
+    isPlantCollectionForFilter.forEach((item) => {
+      if (item.name.includes(search)) {
+        search_data.push(item);
+      }
+    });
+    setPlantCollection(search_data);
+  };
+
   const closeModal = () => {
     console.log("closeModal");
     setModalVisible(!modalVisible);
@@ -253,12 +177,15 @@ function searchScreen({ navigation, route }) {
           <Image source={require("../assets/logoText.png")} />
         </View>
       </View>
-      
+
       <View style={styles.topPart}>
         <View style={{ width: "75%" }}>
           <SearchBar
             placeholder="ค้นหา..."
-            onChangeText={(search) => setSearch(search)}
+            onChangeText={(search) => {
+              setSearch(search);
+              dataSearch(search)
+            }}
             value={search}
             round
             lightTheme
@@ -385,7 +312,7 @@ function searchScreen({ navigation, route }) {
                 }}
                 onPress={() =>
                   navigation.navigate("info", {
-                    userID: "f141AGHQqLVCRtYTXBPq",
+                    userID: userID,
                     plantID: l.key,
                   })
                 }

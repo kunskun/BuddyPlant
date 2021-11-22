@@ -369,7 +369,7 @@ function selectedInfo({ navigation, route }) {
             <Text style={styles.textDetail}>{isType}</Text>
           </Text>
           <Text style={styles.headerText}>
-            ประเทภ:
+            ประเภท:
             {isCategory.map((l, i) => (
                 <Text style={styles.textDetail}>
                 {"\n"}{" "}
