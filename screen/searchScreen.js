@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,118 +6,186 @@ import {
   Pressable,
   Modal,
   ScrollView,
+  Alert,
+  Image,
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
+import firebase from "../database/firebaseDB";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 
-function searchScreen() {
+function searchScreen({ navigation, route }) {
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [isLeaf, setLeaf] = useState(false);
   const [isFruit, setFruit] = useState(false);
   const [isRoot, setRoot] = useState(false);
+  const [isTrunk, setTrunk] = useState(false);
+  const [isSeed, setSeed] = useState(false);
+
+  const [isFloor, setFloor] = useState(false);
+  const [isIndia, setIndia] = useState(false);
+  const [isKitchen, setKitchen] = useState(false);
+  const [isCool, setCool] = useState(false);
+  const [isRain, setRain] = useState(false);
+  const [isHot, setHot] = useState(false);
+
+  //////////////////////////////////////////////////////
+  const [isPlantCollection, setPlantCollection] = useState([]);
+  const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState([]);
+  const [isTypeFlag, setTypeFlag] = useState("");
+  const [isCategoryFlag, setCategoryFlag] = useState("");
+  const [isSeasonFlag, setSeasonFlag] = useState("");
+
+  const plantCollection = firebase.firestore().collection("plants");
+  const [valueInStored, setValueInStored] = useState("");
+
+  let userID = ""
+
+  const getData = async () => {
+    try {
+      userID = await AsyncStorage.getItem("id");
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
+
+  const getPlantCollection = (querySnapshot) => {
+    const all_data = [];
+    querySnapshot.forEach((res) => {
+      all_data.push({
+        key: res.id,
+        name: res.data().name,
+        image: res.data().image,
+        type: res.data().type,
+        category: res.data().category,
+        season: res.data().season,
+      });
+    });
+    setPlantCollection(all_data);
+    setPlantCollectionForFilter(all_data);
+  };
+
+  useEffect(async () => {
+    await getData();
+    plantCollection.onSnapshot(getPlantCollection);
+    // console.log("IN userEffect method");
+    console.log("This " + valueInStored);
+  }, []);
+
+  /*... update ข้อมูลใน firebase(ในแต่ละ filterCillection) เพื่อเปลี่ยนสถานะในหน้า filter ...*/
+  const toggleFilter = (key, name, checked, type) => {
+    // console.log("toggle Filter")
+    const updateSubjDoc = firebase.firestore().collection(type).doc(key);
+    updateSubjDoc
+      .set({
+        name: name,
+        checked: !checked,
+      })
+      .then(() => {});
+  };
+
+  const filterList = [
+    { id: 1, name: "ประเภทกินใบ", checked: isLeaf, set: setLeaf },
+    { id: 2, name: "ประเภทกินผล", checked: isFruit, set: setFruit },
+    { id: 3, name: "ประเภทกินราก", checked: isRoot, set: setRoot },
+    { id: 4, name: "ประเภทกินลำต้น", checked: isTrunk, set: setTrunk },
+    { id: 5, name: "ประเภทกินเมล็ด", checked: isSeed, set: setSeed },
+
+    { id: 6, name: "ผักพื้นบ้านหรือผักป่า", checked: isFloor, set: setFloor },
+    {
+      id: 7,
+      name: "ผักสมุนไพร และเครื่องเทศ",
+      checked: isIndia,
+      set: setIndia,
+    },
+    { id: 8, name: "ผักสวนครัว", checked: isKitchen, set: setKitchen },
+
+    { id: 9, name: "ฤดูหนาว", checked: isCool, set: setCool },
+    { id: 10, name: "ฤดูร้อน", checked: isHot, set: setHot },
+    { id: 11, name: "ฤดูฝน", checked: isRain, set: setRain },
+  ];
+
+  const afFilterType = () => {
+    const typeArray = isPlantCollectionForFilter.filter((value) => {
+      if (value.type === isTypeFlag) {
+        return value;
+      }
+      if (isCategoryFlag !== "" && value.category.includes(isCategoryFlag)) {
+        return value;
+      }
+      if (isSeasonFlag !== "" && value.season.includes(isSeasonFlag)) {
+        return value;
+      }
+    });
+    setPlantCollection(typeArray);
+  };
 
   const filterSearch = () => {
     setModalVisible(false);
     /* ....ค้นหา filter.... */
+    afFilterType();
+    setTypeFlag("");
+    setCategoryFlag("");
+    setSeasonFlag("");
+
+    if (isTypeFlag == "" && isCategoryFlag == "" && isSeasonFlag == "") {
+      setPlantCollection(isPlantCollectionForFilter);
+    }
   };
 
-  const list = [
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-    {
-      image:
-        "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg?ssl=1",
-      name: "ผักชี",
-      type: "กินใบ, กินราก",
-    },
-  ];
+  const dataSearch = (search) => {
+    const search_data = [];
+    isPlantCollectionForFilter.forEach((item) => {
+      if (item.name.includes(search)) {
+        search_data.push(item);
+      }
+    });
+    setPlantCollection(search_data);
+  };
 
-  const filterList = [
-    { name: "พืชกินใบ", checked: isLeaf, set: setLeaf },
-    { name: "พืชกินผล", checked: isFruit, set: setFruit },
-    { name: "พืชกินราก", checked: isRoot, set: setRoot },
-  ];
+  const closeModal = () => {
+    console.log("closeModal");
+    setModalVisible(!modalVisible);
+    setTypeFlag("");
+    setCategoryFlag("");
+    setSeasonFlag("");
+    setPlantCollection(isPlantCollectionForFilter);
+    // filterList.map((item) => {
+    //   return item.set(false);
+    // });
+  };
 
   return (
     <View style={styles.container}>
+      {/* logo app */}
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
+
       <View style={styles.topPart}>
         <View style={{ width: "75%" }}>
           <SearchBar
             placeholder="ค้นหา..."
-            onChangeText={(search) => setSearch(search)}
+            onChangeText={(search) => {
+              setSearch(search);
+              dataSearch(search)
+            }}
             value={search}
             round
             lightTheme
@@ -129,14 +197,9 @@ function searchScreen() {
         </View>
         <Pressable style={styles.filterButton}>
           <Button
-            icon={
-              <Icon
-                name="filter"
-                size={25}
-                color="white"
-                onPress={() => setModalVisible(!modalVisible)}
-              />
-            }
+            icon={<Icon name="filter" size={25} color="white" />}
+            // เอาonPresออกมาอยู่ข้างนอกTag ICON เพราะว่าบางครั้งมันคลิ๊กโดนTag button แต่ไม่โดนTag Icon ก็เลยไม่ interantion
+            onPress={() => setModalVisible(!modalVisible)}
           />
         </Pressable>
 
@@ -157,28 +220,78 @@ function searchScreen() {
                     name="times"
                     size={25}
                     color="black"
-                    onPress={() => setModalVisible(!modalVisible)}
+                    onPress={() => closeModal()}
                   />
                 }
               />
             </View>
-            <View style={{ marginTop: 0, alignSelf: "flex-start" }}>
-              {filterList.map((e) => {
-                return (
-                  <CheckBox
-                    size={30}
-                    title={e.name}
-                    checked={e.checked}
-                    onPress={() => {
-                      e.set(!e.checked);
-                    }}
-                    containerStyle={styles.checkBoxCon}
-                    textStyle={{ fontSize: 20 }}
-                    checkedColor="#2C7B11"
-                  />
-                );
-              })}
-            </View>
+            <ScrollView style={{ width: "100%", height: "80%" }}>
+              <View style={{ marginTop: 0, alignSelf: "flex-start" }}>
+                <Text>ชนิด</Text>
+                {filterList.map((e) => {
+                  if (e.name.includes("ผัก")) {
+                    return (
+                      <CheckBox
+                        key={e.id}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checked={isTypeFlag === e.name}
+                        size={30}
+                        title={e.name}
+                        onPress={() => {
+                          setTypeFlag(e.name);
+                        }}
+                        containerStyle={styles.checkBoxCon}
+                        textStyle={{ fontSize: 20 }}
+                        checkedColor="#2C7B11"
+                      />
+                    );
+                  }
+                })}
+                <Text>ประเภท</Text>
+                {filterList.map((e) => {
+                  if (e.name.includes("ประเภท")) {
+                    return (
+                      <CheckBox
+                        key={e.id}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checked={isCategoryFlag === e.name}
+                        size={30}
+                        title={e.name}
+                        onPress={() => {
+                          setCategoryFlag(e.name);
+                        }}
+                        containerStyle={styles.checkBoxCon}
+                        textStyle={{ fontSize: 20 }}
+                        checkedColor="#2C7B11"
+                      />
+                    );
+                  }
+                })}
+                <Text>ฤดู</Text>
+                {filterList.map((e) => {
+                  if (e.name.includes("ฤดู")) {
+                    return (
+                      <CheckBox
+                        key={e.id}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checked={isSeasonFlag === e.name}
+                        size={30}
+                        title={e.name}
+                        onPress={() => {
+                          setSeasonFlag(e.name);
+                        }}
+                        containerStyle={styles.checkBoxCon}
+                        textStyle={{ fontSize: 20 }}
+                        checkedColor="#2C7B11"
+                      />
+                    );
+                  }
+                })}
+              </View>
+            </ScrollView>
             <Button
               title="ค้นหา"
               buttonStyle={styles.searchFilterBtn}
@@ -189,10 +302,21 @@ function searchScreen() {
       </View>
 
       <View style={styles.midPart}>
-        <ScrollView style={{width: "100%", height: "75%"}}>
-          {list.map((l, i) => (
+        <ScrollView style={{ width: "100%", height: "75%" }}>
+          {isPlantCollection.map((l, i) => (
             <View style={styles.plantBox}>
-              <ListItem key={l.name+i} containerStyle={{ padding: 5 }}     /* onPress={() => {console.log(l.name);}} */>
+              <ListItem
+                key={l.name + i}
+                containerStyle={{
+                  padding: 5,
+                }}
+                onPress={() =>
+                  navigation.navigate("info", {
+                    userID: userID,
+                    plantID: l.key,
+                  })
+                }
+              >
                 <Avatar size="large" source={{ uri: l.image }} />
                 <ListItem.Content>
                   <ListItem.Title>{l.name}</ListItem.Title>
@@ -214,7 +338,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   topPart: {
-    marginTop: 70,
+    marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,

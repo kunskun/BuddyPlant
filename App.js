@@ -2,11 +2,17 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, View, Image, TouchableOpacity, LogBox } from 'react-native';
 import { signInWithGoogleAsync } from './googleLogin/singin'
-import Login from './screen/loginScreen';
-import Profile from './screen/profileScreen';
-import SearchScreen from './screen/searchScreen';
-import Navigation from './navigation/Navigatoion';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//screen
+import SearchScreen from './screen/searchScreen';
+import Navigation from './navigation/Navigatoion'
+import PlantInfo from './screen/plantInfo';
+import SingIn from './googleLogin/singin';
+import LoginScreen from './screen/loginScreen'
+import ProfileScreen from './screen/profileScreen';
+
+// First- obtain access token from Expo's Google API
 
 export default function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -36,27 +42,33 @@ export default function App() {
   }
 
   LogBox.ignoreLogs(['Setting a timer']);
-  
   return (
-    <View style={styles.container}>
-      {
-        !isLogin ?
-        <>
-          <Login/> 
-        </>
-        :
-        <Navigation/>
-      }
-    </View>
-      
+
+    // <LoginScreen/>
+    <Navigation/>
+    // <SearchScreen/>
+    // <PlantInfo/>
+
+
+    // <View style={styles.container}>
+    //   {
+    //     !isLogin ?
+    //     <>
+    //       <LoginScreen/> 
+    //     </>
+    //     :
+    //     <Navigation/>
+    //   }
+    // </View>
   );
-  
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#8BBA8C',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
 });

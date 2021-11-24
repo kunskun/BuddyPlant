@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import Image from "react-native-scalable-image";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
 function searchScreen() {
   const [search, setSearch] = useState("");
@@ -30,6 +31,14 @@ function searchScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
       <View style={styles.topPart}>
         <Text style={styles.headFont}>Notification</Text>
       </View>
@@ -71,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   topPart: {
-    marginTop: 50,
+    marginTop: 10,
   },
   headFont: {
     fontSize: 50,

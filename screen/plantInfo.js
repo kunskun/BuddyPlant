@@ -306,6 +306,7 @@ function plantInfo({ navigation, route }) {
           setShowDate(false);
         }}
       >
+        <View opacity={0.6} style={{width: '100%', height: '100%', position: 'absolute', backgroundColor: '#111111', left: 0, top: 0}}></View>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.contX}>
@@ -381,6 +382,7 @@ function plantInfo({ navigation, route }) {
           setShowFeedBack(false);
         }}
       >
+        <View opacity={0.6} style={{width: '100%', height: '100%', position: 'absolute', backgroundColor: '#111111', left: 0, top: 0}}></View>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.contX}>

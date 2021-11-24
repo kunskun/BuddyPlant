@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { StatusBar } from "expo-status-bar";
 import React, { Component } from "react";
 import { TouchableOpacityBase } from "react-native";
@@ -11,6 +12,13 @@ import {
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+=======
+import { StatusBar } from 'expo-status-bar';
+import React, { Component } from 'react';
+import { TouchableOpacityBase } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+>>>>>>> Stashed changes
 import { Input } from "react-native-elements";
 import firebase from "../database/firebaseDB";
 import { signInWithGoogleAsync } from "../googleLogin/singin";
@@ -157,6 +165,7 @@ class profileScreen extends Component {
               </View>
             </View>
 
+<<<<<<< Updated upstream
             {/* content */}
             {this.state.isLogin ? (
               <>
@@ -188,6 +197,36 @@ class profileScreen extends Component {
                 </View>
                 <View style={{ width: 275, marginTop: "5%" }}>
                   {!this.state.editProfile ? (
+=======
+    render() {
+        return (
+            <ScrollView style={{backgroundColor: '#8BBA8C',}}>
+            <View style={styles.container}>
+                {/* logo app */}
+                
+                {/* <View opacity={0.3} style={{ backgroundColor: "#bbcdef", width: "100%", height: 90, position: 'absolute'}}></View> */}
+                    <View style={{marginTop: 35, width: "100%", alignItems: "center"}}>
+                        <View opacity={0.3}>
+                            <FontAwesome5 name="seedling" size={40} color="#ffffff"/>
+                        </View>
+                        <View style={{position: 'absolute',top: 10}}>
+                            <Image source={require("../assets/logoText.png")} />
+                        </View>
+                    </View>
+                    {/* <View style={{ marginTop: 35, width: "100%", alignItems: "center",}}>
+                        <View opacity={0.3} style={{ position: "absolute" }}>
+                            <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+                        </View>
+                        <View style={{ position: "absolute", top: 10}}>
+                            <Image source={require("../assets/logoText2.png")} />
+                        </View>
+                    </View> */}
+                
+
+                {/* content */}
+                {
+                    this.state.isLogin ?
+>>>>>>> Stashed changes
                     <>
                       <TouchableOpacity
                         style={styles.btn1}
@@ -216,6 +255,7 @@ class profileScreen extends Component {
                     >
                       <Text style={styles.textBtn}>SAVE</Text>
                     </TouchableOpacity>
+<<<<<<< Updated upstream
                   )}
                 </View>
               </>
@@ -231,6 +271,13 @@ class profileScreen extends Component {
         </ScrollView>
     );
   }
+=======
+                }
+            </View>
+            </ScrollView>
+        )
+    }
+>>>>>>> Stashed changes
 }
 
 const styles = StyleSheet.create({
