@@ -15,6 +15,7 @@ import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
 import firebase from "../database/firebaseDB";
 import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 function selectedList({ navigation, route }) {
@@ -48,6 +49,7 @@ function selectedList({ navigation, route }) {
   const getData = async () => {
     try {
       userID = await AsyncStorage.getItem("id");
+      console.log(userID)
     } catch (e) {
       // error reading value
       console.log(e);
@@ -92,7 +94,7 @@ function selectedList({ navigation, route }) {
         </View>
       </View>
       <View style={styles.topPart}>
-        <Text style={styles.headFont}>Selected List</Text>
+        <Text style={styles.headFont}>Your Plant</Text>
       </View>
       <View style={styles.midPart}>
         <ScrollView style={{ width: "100%", height: "75%" }}>

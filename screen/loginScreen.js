@@ -14,16 +14,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function Login( {navigation  }) {
-  const [isLogin, setIsLogin] = useState(false);
-  const [valueInStored, setValueInStored] = useState('');
+  // const [isLogin, setIsLogin] = useState(false);
+  // const [valueInStored, setValueInStored] = useState('');
 
-  useEffect(async () => {
-    await getData()
+  // useEffect(async () => {
+  //   await getData()
 
-    if(valueInStored !== null) setIsLogin(true)
-    else setIsLogin(false)
-    console.log("useEffect LOgin Page " + valueInStored);
-  })
+  //   if(valueInStored !== null) setIsLogin(true)
+  //   else setIsLogin(false)
+  //   console.log("useEffect LOgin Page " + valueInStored);
+  // })
 
   const getData = async() => {
     try {

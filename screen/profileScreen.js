@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { TouchableOpacityBase } from 'react-native';
-import { Button, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Input } from "react-native-elements";
 import firebase from '../database/firebaseDB';
@@ -66,6 +66,7 @@ class profileScreen extends Component {
     async removeValue () {
         try {
           await AsyncStorage.removeItem('mail')
+          await AsyncStorage.removeItem('id')
         } catch(e) {
           // remove error
         }
@@ -133,17 +134,29 @@ class profileScreen extends Component {
 
     render() {
         return (
+            <ScrollView style={{backgroundColor: '#8BBA8C',}}>
             <View style={styles.container}>
                 {/* logo app */}
-                <View style={{marginTop: 35, width: "100%", alignItems: "center"}}>
-                <View opacity={0.3}>
-                    <FontAwesome5 name="seedling" size={40} color="#ffffff"/>
-                </View>
-                <View style={{position: 'absolute',top: 10}}>
-                    <Image source={require("../assets/logoText.png")} />
-                </View>
-                </View>
                 
+                {/* <View opacity={0.3} style={{ backgroundColor: "#bbcdef", width: "100%", height: 90, position: 'absolute'}}></View> */}
+                    <View style={{marginTop: 35, width: "100%", alignItems: "center"}}>
+                        <View opacity={0.3}>
+                            <FontAwesome5 name="seedling" size={40} color="#ffffff"/>
+                        </View>
+                        <View style={{position: 'absolute',top: 10}}>
+                            <Image source={require("../assets/logoText.png")} />
+                        </View>
+                    </View>
+                    {/* <View style={{ marginTop: 35, width: "100%", alignItems: "center",}}>
+                        <View opacity={0.3} style={{ position: "absolute" }}>
+                            <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+                        </View>
+                        <View style={{ position: "absolute", top: 10}}>
+                            <Image source={require("../assets/logoText2.png")} />
+                        </View>
+                    </View> */}
+                
+
                 {/* content */}
                 {
                     this.state.isLogin ?
@@ -212,6 +225,7 @@ class profileScreen extends Component {
                     </TouchableOpacity>
                 }
             </View>
+            </ScrollView>
         )
     }
 }

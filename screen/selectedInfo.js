@@ -237,12 +237,14 @@ function selectedInfo({ navigation, route }) {
   return (
     <View style={styles.container}>
       {/* logo app */}
-      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
-        <View opacity={0.3}>
-          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
-        </View>
-        <View style={{ position: "absolute", top: 10 }}>
-          <Image source={require("../assets/logoText.png")} />
+      <View style={{ backgroundColor: "#2C7B11", width: "100%", height: 50, zIndex: 1}}>
+        <View style={{ marginTop: 35, width: "100%", alignItems: "center",}}>
+          <View opacity={0.3} style={{ position: "absolute" }}>
+            <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+          </View>
+          <View style={{ position: "absolute", top: 10}}>
+            <Image source={require("../assets/logoText2.png")} />
+          </View>
         </View>
       </View>
       {/* send feedback */}
@@ -435,7 +437,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   topPart: {
-    marginTop: 10,
+    // marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,

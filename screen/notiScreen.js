@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import Image from "react-native-scalable-image";
+import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
 function searchScreen() {
   const [search, setSearch] = useState("");
@@ -18,20 +19,26 @@ function searchScreen() {
   const [isRoot, setRoot] = useState(false);
 
   const notiList = [
-    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
-    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
-    { name: "ไบเบิล เยอบีราวิลเลจแฟรนไชส์ แคชเชียร์กีวีนายแบบโปรหม่านโถว ",
-      image: "https://reactnative.dev/img/tiny_logo.png",
-    },
-    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
-    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
-    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
-    { name: "ลดน้ำต้นไม้", image: "https://reactnative.dev/img/tiny_logo.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
+    { name: "เก็บเกี่ยวผล", image: "https://cdn-icons-png.flaticon.com/512/1617/1617560.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
+    { name: "ลดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
 
   ];
 
   return (
     <View style={styles.container}>
+      <View style={{ marginTop: 35, width: "100%", alignItems: "center" }}>
+        <View opacity={0.3}>
+          <FontAwesome5 name="seedling" size={40} color="#ffffff" />
+        </View>
+        <View style={{ position: "absolute", top: 10 }}>
+          <Image source={require("../assets/logoText.png")} />
+        </View>
+      </View>
       <View style={styles.topPart}>
         <Text style={styles.headFont}>Notification</Text>
       </View>
@@ -73,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   topPart: {
-    marginTop: 50,
+    marginTop: 10,
   },
   headFont: {
     fontSize: 50,
