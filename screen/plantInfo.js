@@ -21,10 +21,9 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { color } from "react-native-elements/dist/helpers";
 import * as Notifications from "expo-notifications";
 import firebase from "../database/firebaseDB";
-
 import { Entypo } from "@expo/vector-icons";
-import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-
+import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -35,6 +34,9 @@ Notifications.setNotificationHandler({
 });
 
 function plantInfo({ navigation, route }) {
+  
+  const planDB = firebase.firestore().collection("plan");
+  const userPlanDB = firebase.firestore().collection("user-plant");
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
   const [isShowDate, setShowDate] = useState(false);
   const [feedBack, setFeedBack] = useState("");
@@ -45,9 +47,7 @@ function plantInfo({ navigation, route }) {
 
   ///plant Info
   const [isID, setID] = useState("");
-  const [isImage, setImage] = useState(
-    "https://clicxy.com/wp-content/uploads/2016/04/dummy-post-horisontal.jpg"
-  );
+  const [isImage, setImage] = useState("https://clicxy.com/wp-content/uploads/2016/04/dummy-post-horisontal.jpg");
   const [isName, setName] = useState("");
   const [isType, setType] = useState("");
   const [isCate, setCate] = useState("");
@@ -60,14 +60,22 @@ function plantInfo({ navigation, route }) {
   const [isAttend_date, setAttend_date] = useState(0);
   const [isAttend_time, setAttend_time] = useState(0);
   const [isRecive_range, setRecive_range] = useState(0);
-
   const [isPlanCollection, setPlanCollection] = useState([]);
-  const planDB = firebase.firestore().collection("plan");
-  const userPlanDB = firebase.firestore().collection("user-plant");
-  const userID = route.params.userID;
   const [isUserPlantKey, setUserPlantKey] = useState("");
   const [isUPPlant_id, setUPPlant_id] = useState("");
+  const [userID, setUserID] = useState("");
+  let temp = "";
 
+  const getData = async() => {
+      try {
+          const value = await AsyncStorage.getItem('id')
+          setUserID(value);
+          console.log(userID);      
+        } catch(e) {
+          // error reading value
+          console.log(e);
+        }
+  }
   const getKeyUserPlant = (querySnapshot) => {
     const plan_data = [];
 
@@ -102,7 +110,7 @@ function plantInfo({ navigation, route }) {
   useEffect(() => {
     const plantID = route.params.plantID;
     const plantDoc = firebase.firestore().collection("plants").doc(plantID);
-
+    getData()
     plantDoc.get().then((res) => {
       const category = res.data().category;
       const splitCategory = category.split(", ");
@@ -166,7 +174,6 @@ function plantInfo({ navigation, route }) {
     setFeedBack("");
   };
 
-
   const keyUserPlant = () => {
     console.log("keyUserPlant")
     userPlanDB.onSnapshot( (value) => {
@@ -183,6 +190,7 @@ function plantInfo({ navigation, route }) {
     console.log("Plant key :"+isUserPlantKey)
     setShowDate(false);
     setSelectDate(selectDate);
+    console.log("user id is "+userID);
     const date = new Date();
     userPlanDB
       .add({
@@ -249,10 +257,12 @@ function plantInfo({ navigation, route }) {
   };
 
   const notification = () => {
+    navigation.navigate("notification")
     console.log("notification");
   };
 
   const user = () => {
+    navigation.navigate("profile")
     console.log("user");
   };
 

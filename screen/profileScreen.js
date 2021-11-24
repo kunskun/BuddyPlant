@@ -158,9 +158,9 @@ class profileScreen extends Component {
                 
 
                 {/* content */}
-                {
+                {/* {
                     this.state.isLogin ?
-                    <>
+                    <> */}
                         <Text style={styles.header}>Profile</Text>
                         <View>
                             {   
@@ -182,7 +182,7 @@ class profileScreen extends Component {
                                         placeholder={this.state.name}
                                         value={this.state.name}
                                         onChangeText={(val) => this.inputValue(val, "name")}
-                                        />
+                                    />
                                 </>
                             }
                             
@@ -215,7 +215,7 @@ class profileScreen extends Component {
                                 </TouchableOpacity>
                             }
                         </View>
-                    </>
+                    {/* </>
                     :
                     <TouchableOpacity 
                         style={styles.btn3}
@@ -223,7 +223,7 @@ class profileScreen extends Component {
                     >    
                         <Text style={styles.textBtn}>LOGIN</Text>
                     </TouchableOpacity>
-                }
+                } */}
             </View>
             </ScrollView>
         )
