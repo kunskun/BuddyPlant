@@ -69,7 +69,7 @@ function selectedInfo({ navigation, route }) {
     try {
         const value = await AsyncStorage.getItem('id')
         userID = value;    
-        console.log("Local Storage userID = " + userID);      
+        // console.log("Local Storage userID = " + userID);      
       } catch(e) {
         // error reading value
         console.log(e);
@@ -80,7 +80,7 @@ function selectedInfo({ navigation, route }) {
     // const plan_data = [];
     await planDB.onSnapshot(plan => {
       plan.forEach( res => {
-        if(res.data().user_plant_id === plant && res.data().plant_id === id){
+        if(res.data().user_plant_id === route.params.user_plantID && res.data().plant_id === id){
           // console.log(res.data().do);
           // planArray.push({
           //   do: res.data().do,
@@ -114,6 +114,7 @@ function selectedInfo({ navigation, route }) {
 
   useEffect(async() => {
     const plantID = route.params.plantID;
+    console.log("User_plant             :       "+route.params.user_plantID)
     const plantDoc = firebase.firestore().collection("plants").doc(plantID);
     await getData();
     console.log("UseEffect UserID = " + userID);

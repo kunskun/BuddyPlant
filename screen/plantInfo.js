@@ -136,15 +136,43 @@ function plantInfo({ navigation, route }) {
     setSelectDate(date);
   };
 
+  const addFeedback = () => {
+    notificationDB.add({
+      do: "ส่งข้อเสนอแนะ",
+      name: "",
+      user_id: userID,
+      date: new Date(selectDate),
+      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+    })
+    .then((res) => {
+      console.log("Insert Notification Transaction Successfully")
+    });
+  }
+
   const sendFeedBack = () => {
     if (feedBack == "") {
       console.log("none feedback");
     } else {
-      console.log("send feedback: " + feedBack);
+      addFeedback()
     }
     setShowFeedBack(false);
     setFeedBack("");
   };
+
+
+  const addNotification = () => {
+    notificationDB.add({
+      do: "เริ่มปลูก",
+      name: isName,
+      user_id: userID,
+      date: new Date(selectDate),
+      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+    })
+    .then((res) => {
+      console.log("Insert Notification Transaction Successfully")
+    });
+  }
+
 
   const sendDate = async () => {
     // console.log("Plant key :"+userPlantKey)
@@ -207,17 +235,7 @@ function plantInfo({ navigation, route }) {
       console.log("Insert Receive Date Successfully")
     });
 
-    notificationDB.add({
-      do: "เริ่มปลูก",
-      name: isName,
-      user_id: userID,
-      date: new Date(selectDate),
-      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
-    })
-    .then((res) => {
-      console.log("Insert Notification Transaction Successfully")
-    });
-
+    addNotification();
 
     await schedulePushNotification();
   };
@@ -232,13 +250,6 @@ function plantInfo({ navigation, route }) {
     console.log("user");
   };
 
-  // set select time to 8.00 am
-  function calculateSecondsToSpecifiedDate() {
-    selectDate.setDate(selectDate.getDate() + 1);
-    selectDate.setHours(7, 0, 0);
-    var Difference_In_Time = selectDate.getTime() - nowDate.getTime();
-    return Difference_In_Time;
-  }
 
   async function schedulePushNotification() {
     await Notifications.setNotificationChannelAsync("new-noti", {
@@ -254,7 +265,7 @@ function plantInfo({ navigation, route }) {
         data: { data: "goes here" },
       },
       trigger: {
-        seconds: calculateSecondsToSpecifiedDate(),
+        seconds: 2,
         channelId: "new-noti",
       },
     });

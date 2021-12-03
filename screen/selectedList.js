@@ -57,6 +57,7 @@ function selectedList({ navigation, route }) {
     const all_data = [];
     querySnapshot.forEach((res) => {
       if (res.data().user_id == userID)
+      // console.log("Collection         :     "  + res.id)
         all_data.push({
           key: res.id,
           id: res.data().plant_id,
@@ -106,6 +107,7 @@ function selectedList({ navigation, route }) {
                   navigation.navigate("selectInfo", {
                     // userID: userID,
                     plantID: l.id,
+                    user_plantID: l.key
                   })
                 }
               >

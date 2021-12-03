@@ -102,7 +102,7 @@ function searchScreen() {
                     </ListItem.Subtitle>
                     <ListItem.Subtitle style={{ fontSize: 18, color: "black" }}>
                       {l.name} {"\n"}
-                      เริ่มทำเมื่อ {l.date.toDate().toDateString().slice(4)}
+                      เมื่อ {l.date.toDate().toDateString().slice(4)}
                     </ListItem.Subtitle>
                   </ListItem.Content>
                 </ListItem>
