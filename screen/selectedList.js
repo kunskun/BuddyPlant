@@ -46,7 +46,7 @@ function selectedList({ navigation, route }) {
   const getData = async () => {
     try {
       userID = await AsyncStorage.getItem("id");
-      console.log(userID);
+      // console.log(userID);
     } catch (e) {
       // error reading value
       console.log(e);
@@ -76,7 +76,7 @@ function selectedList({ navigation, route }) {
   useEffect(async () => {
     await getData()
     userPlanCollection.onSnapshot(getPlantCollection);
-    console.log("IN userEffect method");
+    // console.log("IN userEffect method");
   }, []);
 
   return (
@@ -104,7 +104,7 @@ function selectedList({ navigation, route }) {
                 }}
                 onPress={() =>
                   navigation.navigate("selectInfo", {
-                    userID: userID,
+                    // userID: userID,
                     plantID: l.id,
                   })
                 }

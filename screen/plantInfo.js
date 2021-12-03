@@ -35,7 +35,7 @@ Notifications.setNotificationHandler({
 
 function plantInfo({ navigation, route }) {
   
-  const planDB = firebase.firestore().collection("plan");
+  const planDB = firebase.firestore().collection("plans");
   const userPlanDB = firebase.firestore().collection("user-plant");
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
   const [isShowDate, setShowDate] = useState(false);
@@ -61,10 +61,11 @@ function plantInfo({ navigation, route }) {
   const [isAttend_time, setAttend_time] = useState(0);
   const [isRecive_range, setRecive_range] = useState(0);
   const [isPlanCollection, setPlanCollection] = useState([]);
-  const [isUserPlantKey, setUserPlantKey] = useState("");
+  // const [userPlantKey, setUserPlantKey] = useState("");
   const [isUPPlant_id, setUPPlant_id] = useState("");
   const [userID, setUserID] = useState("");
   let temp = "";
+  let userPlantKey = "";
 
   const getData = async() => {
       try {
@@ -76,36 +77,16 @@ function plantInfo({ navigation, route }) {
           console.log(e);
         }
   }
-  const getKeyUserPlant = (querySnapshot) => {
-    const plan_data = [];
 
-    // userPlanDB.onSnapshot((value) => {
-      querySnapshot.forEach((res) => {
-        if (res.data().user_id == userID) {
-          const userPlantKey = res.id;
-          const userPlant_PlantID = res.data().plant_id
-          setUserPlantKey(res.id);
-          setUPPlant_id(res.data().plant_id)
-          planDB.onSnapshot((value) => {
-            value.forEach((res) => {
-              if(res.data().user_plant_id == userPlantKey){
-                setUserPlantKey(userPlantKey)              }
-              if ((res.data().user_plant_id == userPlantKey) && (userPlant_PlantID == isID)) {                
-                plan_data.push({
-                  key: res.id,
-                  do: res.data().do,
-                  plan_date: res.data().plan_date,
-                  plan_time: res.data().plan_time,
-                });
-              }
-            });
-            setPlanCollection(plan_data);
-            setUserPlantKey("")
-          });
-        }
-      });
-    // });
-  };
+  // const getKeyUserPlant = (querySnapshot) => {
+  //   querySnapshot.forEach((res) => {
+  //     if (res.data().user_id == userID) {
+  //       console.log("Res id = "+res.id);
+  //       setUserPlantKey(res.id);
+  //       setUPPlant_id(res.data().plant_id)
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
     const plantID = route.params.plantID;
@@ -174,26 +155,14 @@ function plantInfo({ navigation, route }) {
     setFeedBack("");
   };
 
-  const keyUserPlant = () => {
-    console.log("keyUserPlant")
-    userPlanDB.onSnapshot( (value) => {
-      value.forEach((res) => {
-        if (res.data().plant_id == isID) {
-          setUserPlantKey(res.id);
-        }
-      });
-    });
-  };
-
   const sendDate = async () => {
-    userPlanDB.onSnapshot(getKeyUserPlant);
-    console.log("Plant key :"+isUserPlantKey)
+    // userPlanDB.onSnapshot(getKeyUserPlant);
+    console.log("Plant key :"+userPlantKey)
+    console.log("user id is "+userID);
     setShowDate(false);
     setSelectDate(selectDate);
-    console.log("user id is "+userID);
     const date = new Date();
-    userPlanDB
-      .add({
+    await userPlanDB.add({
         category_plant: isCate,
         image: isImage,
         name_plant: isName,
@@ -204,55 +173,46 @@ function plantInfo({ navigation, route }) {
         type_plant: isType,
         user_id: userID,
       })
-      .then((res) => {
+      .then(res => {
         console.log("Insert User+Plant Successfully")
-        keyUserPlant();
+        userPlantKey = res.id
       });
 
-
-    for(let i = isAttend_date; i <= isRecive_range; i++){
+    for(let i = isAttend_date; i <= isRecive_range/2; i++){
+      
       // console.log(isAttend_date * i)
       const between = i * isAttend_date
       const date = new Date();
       date.setDate(date.getDate() + between);
       // console.log(date.toString())
-      if(between != isRecive_range){
-
+      if(between < isRecive_range){
+        planDB.add({
+          do: "รดน้ำต้นไม้",
+          plant_id: isID,
+          plan_date: date,
+          plan_time: "17:00:00",
+          user_plant_id: userPlantKey,
+        })
+        .then((res) => {
+          console.log("Insert Doing Date Successfully")
+        });
       }
       else if(between >= isRecive_range){
-        console.log("SSSSSS " + isUserPlantKey)
-      //   planDB
-      // .add({
-      //   do: "เก็บเกี่ยวผล",
-      //   plant_id: isID,
-      //   plan_date: date,
-      //   plan_time: "17:00:00",
-      //   user_plant_id: isUserPlantKey,
-      // })
-      // .then((res) => {
-      //   console.log("Insert Receive Date Successfully")
-      // });
+
+        console.log("User Plant Key = " + userPlantKey)
+        planDB.add({
+          do: "เก็บเกี่ยวผล",
+          plant_id: isID,
+          plan_date: date,
+          plan_time: "17:00:00",
+          user_plant_id: userPlantKey,
+        })
+        .then((res) => {
+          console.log("Insert Receive Date Successfully")
+        });
       }
 
     }
-
-    // planDB.add({
-    //     do: "",
-    //     name: this.state.name,
-    //     gpa: this.state.gpa,
-    //   })
-    //   .then((res) => {
-    //     this.setState({
-    //       id: "",
-    //       name: "",
-    //       gpa: "",
-    //     });
-    //     this.props.navigation.navigate("Student List")
-    //     // Alert.alert(
-    //     //   "Adding Alert",
-    //     //   "New subject was added!!"
-    //     // );
-    //   });
     await schedulePushNotification();
   };
 
@@ -543,7 +503,7 @@ function plantInfo({ navigation, route }) {
           {/* show if have user */}
 
           {/* ต้องใช้ๆ */}
-          {isUserPlantKey !== ""  && (
+          {userPlantKey !== ""  && (
             <Text style={styles.headerText}>
               สิ่งที่ต้องทำ:
               {"\n"}
@@ -578,7 +538,7 @@ function plantInfo({ navigation, route }) {
       {/* for test */}
 
       {/* pick date button */}
-      {/* {isUserPlantKey !== "" && ( */}
+      {/* {userPlantKey !== "" && ( */}
         <Button
           title="เลือกเวลาเริ่มปลูก"
           buttonStyle={styles.selectTimeBtn}

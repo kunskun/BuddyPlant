@@ -20,10 +20,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { color } from "react-native-elements/dist/helpers";
 import * as Notifications from "expo-notifications";
 import firebase from "../database/firebaseDB";
-import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-
-
-import { Entypo } from "@expo/vector-icons";
+import { FontAwesome5, Entypo} from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -58,29 +56,65 @@ function selectedInfo({ navigation, route }) {
   const [isAttend_date, setAttend_date] = useState(0);
   const [isAttend_time, setAttend_time] = useState(0);
   const [isRecive_range, setRecive_range] = useState(0);
-
-  const [isPlanCollection, setPlanCollection] = useState([]);
-  const planDB = firebase.firestore().collection("plan");
+  const [planCollection, setPlanCollection] = useState([]);
+  const planDB = firebase.firestore().collection("plans");
   const userPlanDB = firebase.firestore().collection("user-plant");
-  const userID = route.params.userID;
+  // const userID = route.params.userID;
   const [isUserPlantKey, setUserPlantKey] = useState("");
+  const plantID = route.params.plantID
+  let userID = "";
+  let planArray = [];
 
-  const getKeyUserPlant = () => {
-    const plan_data = [];
-    userPlanDB.onSnapshot(selectePlant => {
-      selectePlant.forEach( res => {
-        if(res.data().id === userID){
-          console.log(res.data().name_plant);
+  const getData = async() => {
+    try {
+        const value = await AsyncStorage.getItem('id')
+        userID = value;    
+        console.log("Local Storage userID = " + userID);      
+      } catch(e) {
+        // error reading value
+        console.log(e);
+      }
+  }
+
+  const getPlan = async(plant, id) => {
+    // const plan_data = [];
+    await planDB.onSnapshot(plan => {
+      plan.forEach( res => {
+        if(res.data().user_plant_id === plant && res.data().plant_id === id){
+          planArray.push({
+            do: res.data().do,
+            plan_date: res.data().plan_date,
+            plan_time: res.data().plan_time,
+          }) 
+          console.log(res.data().do);
+          setPlanCollection(planArray);
         }
-        
       })
     })
+  }
+
+  const getKeyUserPlant = () => {
+    userPlanDB.onSnapshot(selectePlant => {
+      selectePlant.forEach( res => {
+
+        const user_id = res.data().user_id;
+        const plant_id = res.data().plant_id;
+
+        if(userID === user_id && plantID === plant_id){
+          console.log("Your plan");
+          getPlan(res.id, plant_id)
+          
+        }      
+      })
+    })
+    sortDate()
   };
 
-  useEffect(() => {
+  useEffect(async() => {
     const plantID = route.params.plantID;
     const plantDoc = firebase.firestore().collection("plants").doc(plantID);
-
+    await getData();
+    console.log("UseEffect UserID = " + userID);
     plantDoc.get().then((res) => {
       const category = res.data().category;
       const splitCategory = category.split(", ");
@@ -102,7 +136,7 @@ function selectedInfo({ navigation, route }) {
         console.log("Document does not exist!!");
       }
     });
-    getKeyUserPlant();
+    await getKeyUserPlant();
   }, [route.params.plantID]);
 
   const sendFeedBack = () => {
@@ -152,6 +186,42 @@ function selectedInfo({ navigation, route }) {
       },
     });
   }
+
+  function checkDate(date) {
+    const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    const input = new Date(date).toDateString().split(" ");
+    const now = new Date().toDateString().split(" ");
+
+    if(parseInt(now[3]) <= parseInt(input[3]) 
+      && month.indexOf(now[1]) >= month.indexOf(input[1]) 
+      && parseInt(now[2]) < parseInt(input[2])){
+      return true
+    }
+    
+    return false
+  }
+
+  function sortDate(){
+    // const tempArray = [...planCollection]
+    const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    console.log("ssdsdsdsdssdd = " + planCollection[0]);
+
+    // for(let i=0; i <= tempArray.length; i++){
+    //   const date = new Date(i).toDateString().split(" ");
+    //   for (let j = 0; j < tempArray.length; j++) {
+    //     // if(parseInt() <= parseInt(date[3]) 
+    //     //   && month.indexOf() >= month.indexOf(date[1]) 
+    //     //   && parseInt() < parseInt(date[2])){
+    //     //   return true
+    //     // }
+    //   }
+    // }
+    
+    
+  }
+
+
 
   return (
     <View style={styles.container}>
@@ -326,18 +396,18 @@ function selectedInfo({ navigation, route }) {
             <Text style={styles.headerText}>
               สิ่งที่ต้องทำ:
               {"\n"}
-              {isPlanCollection.map((l, i) => (
+              {planCollection.map((l, i) => (
                 <Text
                   key={l.key}
                   style={[
                     styles.textDetail,
-                    i == 0 && {
+                    checkDate(l.plan_date.toDate().toDateString()) && {
                       textDecorationLine: "line-through",
                       textDecorationColor: "black",
                     },
                   ]}
-                >
-                  {l.plan_date} : {l.do + "\n"}
+                > 
+                  {l.plan_date.toDate().toDateString().slice(4)} : {l.do + "\n"}
                 </Text>
               ))}
             </Text>
