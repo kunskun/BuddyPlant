@@ -153,56 +153,58 @@ function plantInfo({ navigation, route }) {
     setSelectDate(selectDate);
     const date = new Date();
     await userPlanDB.add({
-        category_plant: isCate,
-        image: isImage,
-        name_plant: isName,
-        plant_id: isID,
-        /////recive_dateยังใช้ไม่ได้
-        recive_date: date,
-        start_date: selectDate,
-        type_plant: isType,
-        user_id: userID,
-      })
-      .then(res => {
-        console.log("Insert User+Plant Successfully")
-        userPlantKey = res.id
-      });
+      category_plant: isCate,
+      image: isImage,
+      name_plant: isName,
+      plant_id: isID,
+      /////recive_dateยังใช้ไม่ได้
+      recive_date: date,
+      start_date: selectDate,
+      type_plant: isType,
+      user_id: userID,
+    })
+    .then(res => {
+      console.log("Insert User+Plant Successfully")
+      userPlantKey = res.id
+    });
+    
+    let temp = [];
 
-    for(let i = isAttend_date; i <= isRecive_range/2; i++){
+    for(let i = isAttend_date; i <= isRecive_range; i++){
       
-      // console.log(isAttend_date * i)
       const between = i * isAttend_date
       const date = new Date();
       date.setDate(date.getDate() + between);
-      // console.log(date.toString())
-      if(between < isRecive_range/2){
-        planDB.add({
+
+      if(between < isRecive_range){
+        temp.push({
           do: "รดน้ำต้นไม้",
           plant_id: isID,
           plan_date: date,
           plan_time: "17:00:00",
           user_plant_id: userPlantKey,
         })
-        .then((res) => {
-          console.log("Insert Doing Date Successfully")
-        });
       }
-      else if(between >= isRecive_range/2){
+      else if(between >= isRecive_range){
 
         console.log("User Plant Key = " + userPlantKey)
-        planDB.add({
+        temp.push({
           do: "เก็บเกี่ยวผล",
           plant_id: isID,
           plan_date: date,
           plan_time: "17:00:00",
           user_plant_id: userPlantKey,
         })
-        .then((res) => {
-          console.log("Insert Receive Date Successfully")
-        });
       }
-
     }
+    planDB.add({
+      do: temp,
+      plant_id: isID,
+      user_plant_id: userPlantKey,
+    })
+    .then((res) => {
+      console.log("Insert Receive Date Successfully")
+    });
     await schedulePushNotification();
   };
 

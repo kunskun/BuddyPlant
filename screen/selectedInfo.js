@@ -81,14 +81,15 @@ function selectedInfo({ navigation, route }) {
     await planDB.onSnapshot(plan => {
       plan.forEach( res => {
         if(res.data().user_plant_id === plant && res.data().plant_id === id){
-          planArray.push({
-            do: res.data().do,
-            plan_date: res.data().plan_date,
-            plan_time: res.data().plan_time,
-          }) 
+          // console.log(res.data().do);
+          // planArray.push({
+          //   do: res.data().do,
+          //   plan_date: res.data().plan_date,
+          //   plan_time: res.data().plan_time,
+          // }) 
           // console.log(res.data().do);
           
-          setPlanCollection(planArray);
+          setPlanCollection(res.data().do);
         }
       })
     })
