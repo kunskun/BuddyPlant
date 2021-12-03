@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,8 @@ import {
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import Image from "react-native-scalable-image";
 import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import firebase from "../database/firebaseDB";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function searchScreen() {
   const [search, setSearch] = useState("");
@@ -17,6 +19,9 @@ function searchScreen() {
   const [isLeaf, setLeaf] = useState(false);
   const [isFruit, setFruit] = useState(false);
   const [isRoot, setRoot] = useState(false);
+  const [isNotiClooection, setNotiColletion] = useState([])
+  const notificationDB = firebase.firestore().collection("notifications");
+
 
   const notiList = [
     { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
@@ -28,6 +33,39 @@ function searchScreen() {
     { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
 
   ];
+
+
+  let userID = ""
+
+  const getData = async () => {
+    try {
+      userID = await AsyncStorage.getItem("id");
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
+
+  const getNotiCollection = (querySnapshot) => {
+    const all_data = [];
+    querySnapshot.forEach((res) => {
+      if(res.data().user_id == userID)
+      all_data.push({
+        key: res.id,
+        name: res.data().name,
+        image: res.data().image,
+        date: res.data().date,
+        do: res.data().do,
+      });
+    });
+    setNotiColletion(all_data);
+  };
+
+  useEffect(async () => {
+    await getData();
+    // console.log("User ID AAAAAAAAAAAA : " + userID)
+    notificationDB.onSnapshot(getNotiCollection);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -46,7 +84,7 @@ function searchScreen() {
       <View style={styles.box}>
         <ScrollView style={{ width: "100%" }}>
           <View style={{ alignItems: "center", marginBottom: 20 }}>
-            {notiList.map((l, i) => (
+            {isNotiClooection.map((l, i) => (
               <View style={styles.card}>
                 <ListItem
                   key={l.name + i}
@@ -60,7 +98,11 @@ function searchScreen() {
                   <Avatar rounded size="medium" source={{ uri: l.image }} />
                   <ListItem.Content>
                     <ListItem.Subtitle style={{ fontSize: 25, color: "black" }}>
-                      {l.name}
+                      {l.do}
+                    </ListItem.Subtitle>
+                    <ListItem.Subtitle style={{ fontSize: 18, color: "black" }}>
+                      {l.name} {"\n"}
+                      เริ่มทำเมื่อ {l.date.toDate().toDateString().slice(4)}
                     </ListItem.Subtitle>
                   </ListItem.Content>
                 </ListItem>

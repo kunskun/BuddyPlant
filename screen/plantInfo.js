@@ -37,6 +37,7 @@ function plantInfo({ navigation, route }) {
   
   const planDB = firebase.firestore().collection("plans");
   const userPlanDB = firebase.firestore().collection("user-plant");
+  const notificationDB = firebase.firestore().collection("notifications");
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
   const [isShowDate, setShowDate] = useState(false);
   const [feedBack, setFeedBack] = useState("");
@@ -146,12 +147,12 @@ function plantInfo({ navigation, route }) {
   };
 
   const sendDate = async () => {
-    // userPlanDB.onSnapshot(getKeyUserPlant);
-    console.log("Plant key :"+userPlantKey)
-    console.log("user id is "+userID);
+    // console.log("Plant key :"+userPlantKey)
+    // console.log("user id is "+userID);
     setShowDate(false);
     setSelectDate(selectDate);
     const date = new Date();
+    date.setDate(date.getDate() + isRecive_range);
     await userPlanDB.add({
       category_plant: isCate,
       image: isImage,
@@ -170,12 +171,12 @@ function plantInfo({ navigation, route }) {
     
     let temp = [];
 
-    for(let i = isAttend_date; i <= isRecive_range; i++){
+    for(let i = 1; i <= isRecive_range; i++){
       
       const between = i * isAttend_date
-      const date = new Date();
+      const date = new Date(selectDate);
       date.setDate(date.getDate() + between);
-
+      // console.log(between)
       if(between < isRecive_range){
         temp.push({
           do: "รดน้ำต้นไม้",
@@ -194,6 +195,7 @@ function plantInfo({ navigation, route }) {
           plan_time: "17:00:00",
           user_plant_id: userPlantKey,
         })
+        break;
       }
     }
     planDB.add({
@@ -204,6 +206,19 @@ function plantInfo({ navigation, route }) {
     .then((res) => {
       console.log("Insert Receive Date Successfully")
     });
+
+    notificationDB.add({
+      do: "เริ่มปลูก",
+      name: isName,
+      user_id: userID,
+      date: new Date(selectDate),
+      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+    })
+    .then((res) => {
+      console.log("Insert Notification Transaction Successfully")
+    });
+
+
     await schedulePushNotification();
   };
 

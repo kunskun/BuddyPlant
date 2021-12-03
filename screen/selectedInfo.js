@@ -109,7 +109,7 @@ function selectedInfo({ navigation, route }) {
         }      
       })
     })
-    sortDate()
+    // sortDate()
   };
 
   useEffect(async() => {
