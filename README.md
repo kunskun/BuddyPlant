@@ -7,9 +7,10 @@ Mobile Device Programming Project
   <li>expo install firebase</li>
   <li>expo install @react-navigation/native</li>
   <li>expo install @react-navigation/native-stack</li>
+  <li>expo install @react-navigation/stack</li>
   <li>expo install @react-navigation/bottom-tabs</li>
   <li>expo install @expo/vector-icons</li>
-  <li>expo install react-native link @react-native-async-storage/async-storage</li>
+  <li>expo install @react-native-async-storage/async-storage</li>
   <li>expo install react-native-screens react-native-safe-area-context</li>
 </ul>
 
