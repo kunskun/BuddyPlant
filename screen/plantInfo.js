@@ -108,18 +108,6 @@ function plantInfo({ navigation, route }) {
     });
   }, [route.params.plantID]);
 
-  const list = {
-    image:
-      "https://i2.wp.com/www.plookphak.com/wp-content/uploads/2015/01/coriander-2.jpg",
-    name: "ผักชี",
-    type: "กินใบ, กินราก",
-    text: "เหมยปักขคณนาอริยสงฆ์ อึมครึมเอาท์ มือถือโฟล์ค แอคทีฟแฟนซีคันยิสหัชญาณเลดี้ บู๊ สเตเดียมเอ็กซ์เพรสม้านั่งเชฟเดบิต คอมเพล็กซ์ ฮอต มาร์เก็ตติ้ง แก๊สโซฮอล์ผลักดัน ไฟต์แรลลี่เท็กซ์ เซ็นเซอร์รัมเยลลี่สถาปัตย์ สวีทแมชชีนตุ๊กออกแบบ รีดไถพันธกิจแอ็คชั่นพ่อค้าคาราโอเกะ ผลักดันเซ็กส์ซูมไคลแม็กซ์ซันตาคลอส วอลซ์ไฮไลต์เสือโคร่ง",
-    toDo: [
-      "2021-10-10 ใส่ปุ๋ย",
-      "2021-10-20 ลดน้ำต้นไม้",
-      "2021-10-30 ถอนทิ้งได้",
-    ],
-  };
 
   const getNewDate = () => {
     return (
@@ -260,8 +248,8 @@ function plantInfo({ navigation, route }) {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "อย่าลืมลดน้ำต้นไม้นะ",
-        body: "ลดต้นผักชี",
+        title: "อย่าลืมรดน้ำต้นไม้นะ",
+        body: isName,
         data: { data: "goes here" },
       },
       trigger: {
