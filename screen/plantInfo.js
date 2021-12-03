@@ -78,16 +78,6 @@ function plantInfo({ navigation, route }) {
         }
   }
 
-  // const getKeyUserPlant = (querySnapshot) => {
-  //   querySnapshot.forEach((res) => {
-  //     if (res.data().user_id == userID) {
-  //       console.log("Res id = "+res.id);
-  //       setUserPlantKey(res.id);
-  //       setUPPlant_id(res.data().plant_id)
-  //     }
-  //   });
-  // };
-
   useEffect(() => {
     const plantID = route.params.plantID;
     const plantDoc = firebase.firestore().collection("plants").doc(plantID);
@@ -185,7 +175,7 @@ function plantInfo({ navigation, route }) {
       const date = new Date();
       date.setDate(date.getDate() + between);
       // console.log(date.toString())
-      if(between < isRecive_range){
+      if(between < isRecive_range/2){
         planDB.add({
           do: "รดน้ำต้นไม้",
           plant_id: isID,
@@ -197,7 +187,7 @@ function plantInfo({ navigation, route }) {
           console.log("Insert Doing Date Successfully")
         });
       }
-      else if(between >= isRecive_range){
+      else if(between >= isRecive_range/2){
 
         console.log("User Plant Key = " + userPlantKey)
         planDB.add({

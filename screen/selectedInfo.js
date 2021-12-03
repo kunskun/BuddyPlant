@@ -86,15 +86,17 @@ function selectedInfo({ navigation, route }) {
             plan_date: res.data().plan_date,
             plan_time: res.data().plan_time,
           }) 
-          console.log(res.data().do);
+          // console.log(res.data().do);
+          
           setPlanCollection(planArray);
         }
       })
     })
+    console.log(planArray);
   }
 
-  const getKeyUserPlant = () => {
-    userPlanDB.onSnapshot(selectePlant => {
+  const getKeyUserPlant = async() => {
+    await userPlanDB.onSnapshot(selectePlant => {
       selectePlant.forEach( res => {
 
         const user_id = res.data().user_id;
@@ -103,7 +105,6 @@ function selectedInfo({ navigation, route }) {
         if(userID === user_id && plantID === plant_id){
           console.log("Your plan");
           getPlan(res.id, plant_id)
-          
         }      
       })
     })
@@ -192,12 +193,13 @@ function selectedInfo({ navigation, route }) {
     const input = new Date(date).toDateString().split(" ");
     const now = new Date().toDateString().split(" ");
 
-    if(parseInt(now[3]) <= parseInt(input[3]) 
-      && month.indexOf(now[1]) >= month.indexOf(input[1]) 
-      && parseInt(now[2]) < parseInt(input[2])){
-      return true
-    }
-    
+    if(parseInt(now[3]) >= parseInt(input[3])){
+      if (month.indexOf(now[1]) > month.indexOf(input[1])){
+        return true
+      } else if (month.indexOf(now[1]) == month.indexOf(input[1]) && parseInt(now[2]) > parseInt(input[2])){
+        return true
+      }
+    }   
     return false
   }
 
@@ -205,7 +207,7 @@ function selectedInfo({ navigation, route }) {
     // const tempArray = [...planCollection]
     const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-    console.log("ssdsdsdsdssdd = " + planCollection[0]);
+    console.log(planCollection);
 
     // for(let i=0; i <= tempArray.length; i++){
     //   const date = new Date(i).toDateString().split(" ");
