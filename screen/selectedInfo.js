@@ -138,7 +138,7 @@ function selectedInfo({ navigation, route }) {
         console.log("Document does not exist!!");
       }
     });
-    await getKeyUserPlant();
+    getKeyUserPlant();
   }, [route.params.plantID]);
 
   const sendFeedBack = () => {
@@ -204,27 +204,11 @@ function selectedInfo({ navigation, route }) {
     return false
   }
 
-  function sortDate(){
-    // const tempArray = [...planCollection]
+  function formatDate(date){
     const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-    console.log(planCollection);
-
-    // for(let i=0; i <= tempArray.length; i++){
-    //   const date = new Date(i).toDateString().split(" ");
-    //   for (let j = 0; j < tempArray.length; j++) {
-    //     // if(parseInt() <= parseInt(date[3]) 
-    //     //   && month.indexOf() >= month.indexOf(date[1]) 
-    //     //   && parseInt() < parseInt(date[2])){
-    //     //   return true
-    //     // }
-    //   }
-    // }
-    
-    
+    let temp = date.split(" ")
+    return temp[1]+"-"+(month.indexOf(temp[0])+1 > 9 ? month.indexOf(temp[0])+1 : "0"+(month.indexOf(temp[0])+1))+"-"+temp[2]
   }
-
-
 
   return (
     <View style={styles.container}>
@@ -410,7 +394,7 @@ function selectedInfo({ navigation, route }) {
                     },
                   ]}
                 > 
-                  {l.plan_date.toDate().toDateString().slice(4)} : {l.do + "\n"}
+                  {formatDate(l.plan_date.toDate().toDateString().slice(4))} : {l.do + "\n"}
                 </Text>
               ))}
             </Text>

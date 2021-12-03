@@ -186,7 +186,6 @@ function plantInfo({ navigation, route }) {
         })
       }
       else if(between >= isRecive_range){
-
         console.log("User Plant Key = " + userPlantKey)
         temp.push({
           do: "เก็บเกี่ยวผล",
