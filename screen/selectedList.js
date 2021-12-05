@@ -3,42 +3,19 @@ import {
   StyleSheet,
   Text,
   View,
-  Pressable,
-  Modal,
   ScrollView,
-  Alert,
   Image
 } from "react-native";
-import { SearchBar, ListItem, Avatar } from "react-native-elements";
-import { Button } from "react-native-elements/dist/buttons/Button";
-import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { ListItem, Avatar } from "react-native-elements";
 import firebase from "../database/firebaseDB";
-import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import {FontAwesome5} from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function selectedList({ navigation, route }) {
-  const [search, setSearch] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isLeaf, setLeaf] = useState(false);
-  const [isFruit, setFruit] = useState(false);
-  const [isRoot, setRoot] = useState(false);
-  const [isTrunk, setTrunk] = useState(false);
-  const [isSeed, setSeed] = useState(false);
-
-  const [isFloor, setFloor] = useState(false);
-  const [isIndia, setIndia] = useState(false);
-  const [isKitchen, setKitchen] = useState(false);
-  const [isCool, setCool] = useState(false);
-  const [isRain, setRain] = useState(false);
-  const [isHot, setHot] = useState(false);
 
   //////////////////////////////////////////////////////
   const [isPlantCollection, setPlantCollection] = useState([]);
   const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState([]);
-  const [isTypeFlag, setTypeFlag] = useState("");
-  const [isCategoryFlag, setCategoryFlag] = useState("");
-  const [isSeasonFlag, setSeasonFlag] = useState("");
 
   const userPlanCollection = firebase.firestore().collection("user-plant");
   let userID = "";
@@ -46,9 +23,7 @@ function selectedList({ navigation, route }) {
   const getData = async () => {
     try {
       userID = await AsyncStorage.getItem("id");
-      // console.log(userID);
     } catch (e) {
-      // error reading value
       console.log(e);
     }
   };
@@ -57,7 +32,6 @@ function selectedList({ navigation, route }) {
     const all_data = [];
     querySnapshot.forEach((res) => {
       if (res.data().user_id == userID)
-      // console.log("Collection         :     "  + res.id)
         all_data.push({
           key: res.id,
           id: res.data().plant_id,
@@ -77,7 +51,6 @@ function selectedList({ navigation, route }) {
   useEffect(async () => {
     await getData()
     userPlanCollection.onSnapshot(getPlantCollection);
-    // console.log("IN userEffect method");
   }, []);
 
   return (
@@ -99,13 +72,12 @@ function selectedList({ navigation, route }) {
           {isPlantCollection.map((l, i) => (
             <View style={styles.plantBox}>
               <ListItem
-                key={l.name + i}
+                key={l + i}
                 containerStyle={{
                   padding: 5,
                 }}
                 onPress={() =>
                   navigation.navigate("selectInfo", {
-                    // userID: userID,
                     plantID: l.id,
                     user_plantID: l.key
                   })
@@ -191,7 +163,6 @@ const styles = StyleSheet.create({
   },
   plantBox: {
     width: "100%",
-    borderWidth: 0.7,
     marginBottom: 15,
   },
 });

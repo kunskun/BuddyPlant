@@ -6,8 +6,8 @@ import {
   Pressable,
   Modal,
   ScrollView,
-  Alert,
   Image,
+  LogBox 
 } from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
@@ -15,13 +15,8 @@ import { CheckBox } from "react-native-elements/dist/checkbox/CheckBox";
 import Icon from "react-native-vector-icons/FontAwesome";
 import firebase from "../database/firebaseDB";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  FontAwesome5,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import {FontAwesome5} from "@expo/vector-icons";
+LogBox.ignoreAllLogs();
 
 function searchScreen({ navigation, route }) {
   const [search, setSearch] = useState("");
@@ -41,7 +36,9 @@ function searchScreen({ navigation, route }) {
 
   //////////////////////////////////////////////////////
   const [isPlantCollection, setPlantCollection] = useState([]);
-  const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState([]);
+  const [isPlantCollectionForFilter, setPlantCollectionForFilter] = useState(
+    []
+  );
   const [isTypeFlag, setTypeFlag] = useState("");
   const [isCategoryFlag, setCategoryFlag] = useState("");
   const [isSeasonFlag, setSeasonFlag] = useState("");
@@ -49,7 +46,7 @@ function searchScreen({ navigation, route }) {
   const plantCollection = firebase.firestore().collection("plants");
   const [valueInStored, setValueInStored] = useState("");
 
-  let userID = ""
+  let userID = "";
 
   const getData = async () => {
     try {
@@ -79,21 +76,7 @@ function searchScreen({ navigation, route }) {
   useEffect(async () => {
     await getData();
     plantCollection.onSnapshot(getPlantCollection);
-    // console.log("IN userEffect method");
-    console.log("This " + valueInStored);
   }, []);
-
-  /*... update ข้อมูลใน firebase(ในแต่ละ filterCillection) เพื่อเปลี่ยนสถานะในหน้า filter ...*/
-  const toggleFilter = (key, name, checked, type) => {
-    // console.log("toggle Filter")
-    const updateSubjDoc = firebase.firestore().collection(type).doc(key);
-    updateSubjDoc
-      .set({
-        name: name,
-        checked: !checked,
-      })
-      .then(() => {});
-  };
 
   const filterList = [
     { id: 1, name: "ประเภทกินใบ", checked: isLeaf, set: setLeaf },
@@ -116,54 +99,58 @@ function searchScreen({ navigation, route }) {
     { id: 11, name: "ฤดูฝน", checked: isRain, set: setRain },
   ];
 
-  const afFilterType = () => {
-    const typeArray = isPlantCollectionForFilter.filter((value) => {
-      if (value.type === isTypeFlag) {
-        return value;
-      }
-      if (isCategoryFlag !== "" && value.category.includes(isCategoryFlag)) {
-        return value;
-      }
-      if (isSeasonFlag !== "" && value.season.includes(isSeasonFlag)) {
-        return value;
-      }
+  function checkType(type) {
+    if (isTypeFlag=="") {
+      return true
+    }else {
+      return type == isTypeFlag
+    }
+  }
+  function checkCatagory(category) {
+    if (isCategoryFlag=="") {
+      return true
+    }else
+      return category.includes(isCategoryFlag)
+  }
+  function checkSeson(season) {
+    if (isSeasonFlag=="") {
+      return true
+    }else{
+      return season.includes(isSeasonFlag)
+    }
+  }
+  function checkName(name, search) {
+      return name.includes(search)
+  }
+
+  const filterSearch = () => {
+    setModalVisible(false);
+
+    /* ....ค้นหา filter.... */
+    const typeArray = isPlantCollectionForFilter.filter((plant) => {
+      return checkType(plant.type) && checkCatagory(plant.category) && checkSeson(plant.season)
     });
     setPlantCollection(typeArray);
   };
 
-  const filterSearch = () => {
-    setModalVisible(false);
-    /* ....ค้นหา filter.... */
-    afFilterType();
-    setTypeFlag("");
-    setCategoryFlag("");
-    setSeasonFlag("");
-
-    if (isTypeFlag == "" && isCategoryFlag == "" && isSeasonFlag == "") {
+  const dataSearch = (search) => {
+    const search_data = isPlantCollectionForFilter.filter((plant) => {
+      return checkName(plant.name, search)
+    });
+    if(search == ""){
       setPlantCollection(isPlantCollectionForFilter);
+    }else {
+      setPlantCollection(search_data);
     }
   };
 
-  const dataSearch = (search) => {
-    const search_data = [];
-    isPlantCollectionForFilter.forEach((item) => {
-      if (item.name.includes(search)) {
-        search_data.push(item);
-      }
-    });
-    setPlantCollection(search_data);
-  };
-
   const closeModal = () => {
-    console.log("closeModal");
     setModalVisible(!modalVisible);
     setTypeFlag("");
     setCategoryFlag("");
     setSeasonFlag("");
     setPlantCollection(isPlantCollectionForFilter);
-    // filterList.map((item) => {
-    //   return item.set(false);
-    // });
+
   };
 
   return (
@@ -183,8 +170,8 @@ function searchScreen({ navigation, route }) {
           <SearchBar
             placeholder="ค้นหา..."
             onChangeText={(search) => {
-              setSearch(search);
-              dataSearch(search)
+              setSearch(search)
+              dataSearch(search);
             }}
             value={search}
             round
@@ -226,8 +213,16 @@ function searchScreen({ navigation, route }) {
               />
             </View>
             <ScrollView style={{ width: "100%", height: "80%" }}>
-              <View style={{ marginTop: 0, alignSelf: "flex-start" }}>
-                <Text>ชนิด</Text>
+              <View style={{alignSelf: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  ชนิด
+                </Text>
                 {filterList.map((e) => {
                   if (e.name.includes("ผัก")) {
                     return (
@@ -239,16 +234,28 @@ function searchScreen({ navigation, route }) {
                         size={30}
                         title={e.name}
                         onPress={() => {
-                          setTypeFlag(e.name);
+                          if (isTypeFlag == e.name) {
+                            setTypeFlag("");
+                          } else {
+                            setTypeFlag(e.name);
+                          }
                         }}
                         containerStyle={styles.checkBoxCon}
-                        textStyle={{ fontSize: 20 }}
+                        textStyle={{ fontSize: 20 , fontWeight: "normal"}}
                         checkedColor="#2C7B11"
                       />
                     );
                   }
                 })}
-                <Text>ประเภท</Text>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  ประเภท
+                </Text>
                 {filterList.map((e) => {
                   if (e.name.includes("ประเภท")) {
                     return (
@@ -260,16 +267,28 @@ function searchScreen({ navigation, route }) {
                         size={30}
                         title={e.name}
                         onPress={() => {
-                          setCategoryFlag(e.name);
+                          if (isCategoryFlag == e.name) {
+                            setCategoryFlag("");
+                          } else {
+                            setCategoryFlag(e.name);
+                          }
                         }}
                         containerStyle={styles.checkBoxCon}
-                        textStyle={{ fontSize: 20 }}
+                        textStyle={{ fontSize: 20, fontWeight: "normal" }}
                         checkedColor="#2C7B11"
                       />
                     );
                   }
                 })}
-                <Text>ฤดู</Text>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  ฤดู
+                </Text>
                 {filterList.map((e) => {
                   if (e.name.includes("ฤดู")) {
                     return (
@@ -281,10 +300,14 @@ function searchScreen({ navigation, route }) {
                         size={30}
                         title={e.name}
                         onPress={() => {
-                          setSeasonFlag(e.name);
+                          if (isSeasonFlag == e.name) {
+                            setSeasonFlag("");
+                          } else {
+                            setSeasonFlag(e.name);
+                          }
                         }}
                         containerStyle={styles.checkBoxCon}
-                        textStyle={{ fontSize: 20 }}
+                        textStyle={{ fontSize: 20, fontWeight: "normal" }}
                         checkedColor="#2C7B11"
                       />
                     );
@@ -296,6 +319,7 @@ function searchScreen({ navigation, route }) {
               title="ค้นหา"
               buttonStyle={styles.searchFilterBtn}
               onPress={filterSearch}
+              titleStyle={{fontSize: 20}}
             />
           </View>
         </Modal>
@@ -380,7 +404,7 @@ const styles = StyleSheet.create({
   },
   checkBoxCon: {
     backgroundColor: "#EEEEEE",
-    marginVertical: 10,
+    marginVertical: 5,
     padding: 0,
   },
   searchFilterBtn: {
@@ -393,7 +417,6 @@ const styles = StyleSheet.create({
   },
   plantBox: {
     width: "100%",
-    borderWidth: 0.7,
     marginBottom: 15,
   },
 });

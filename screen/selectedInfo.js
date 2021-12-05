@@ -9,15 +9,10 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-// expo install react-native-elements
-// expo install react-native-safe-area-context
-// expo install react-native-modal-datetime-picker @react-native-community/datetimepicker
-// expo install expo-notifications
+
 import { Header, Icon } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import Image from "react-native-scalable-image";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { color } from "react-native-elements/dist/helpers";
 import * as Notifications from "expo-notifications";
 import firebase from "../database/firebaseDB";
 import { FontAwesome5, Entypo} from '@expo/vector-icons';
@@ -33,15 +28,12 @@ Notifications.setNotificationHandler({
 
 function selectedInfo({ navigation, route }) {
   const nowDate = new Date(Date.now() - new Date().getTimezoneOffset());
-  const [isShowDate, setShowDate] = useState(false);
   const [feedBack, setFeedBack] = useState("");
   const [isShowFeedBack, setShowFeedBack] = useState(false);
   const [selectDate, setSelectDate] = useState(nowDate);
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [isUser, setUser] = useState(true);
 
   ///plant Info
-  const [isID, setID] = useState("");
+  const notificationDB = firebase.firestore().collection("notifications");
   const [isImage, setImage] = useState(
     "https://clicxy.com/wp-content/uploads/2016/04/dummy-post-horisontal.jpg"
   );
@@ -53,23 +45,16 @@ function selectedInfo({ navigation, route }) {
   const [isPrepare_ground, setPrepare_ground] = useState("");
   const [isPrepare_plant, setPrepare_plant] = useState("");
   const [isHow_to, setHow_to] = useState("");
-  const [isAttend_date, setAttend_date] = useState(0);
-  const [isAttend_time, setAttend_time] = useState(0);
-  const [isRecive_range, setRecive_range] = useState(0);
   const [planCollection, setPlanCollection] = useState([]);
   const planDB = firebase.firestore().collection("plans");
   const userPlanDB = firebase.firestore().collection("user-plant");
-  // const userID = route.params.userID;
-  const [isUserPlantKey, setUserPlantKey] = useState("");
   const plantID = route.params.plantID
-  let userID = "";
-  let planArray = [];
+  const [userID, setUserID] = useState("");
 
   const getData = async() => {
     try {
         const value = await AsyncStorage.getItem('id')
-        userID = value;    
-        // console.log("Local Storage userID = " + userID);      
+        setUserID(value)
       } catch(e) {
         // error reading value
         console.log(e);
@@ -77,23 +62,13 @@ function selectedInfo({ navigation, route }) {
   }
 
   const getPlan = async(plant, id) => {
-    // const plan_data = [];
     await planDB.onSnapshot(plan => {
       plan.forEach( res => {
         if(res.data().user_plant_id === route.params.user_plantID && res.data().plant_id === id){
-          // console.log(res.data().do);
-          // planArray.push({
-          //   do: res.data().do,
-          //   plan_date: res.data().plan_date,
-          //   plan_time: res.data().plan_time,
-          // }) 
-          // console.log(res.data().do);
-          
           setPlanCollection(res.data().do);
         }
       })
     })
-    console.log(planArray);
   }
 
   const getKeyUserPlant = async() => {
@@ -104,25 +79,21 @@ function selectedInfo({ navigation, route }) {
         const plant_id = res.data().plant_id;
 
         if(userID === user_id && plantID === plant_id){
-          console.log("Your plan");
           getPlan(res.id, plant_id)
         }      
       })
     })
-    // sortDate()
   };
 
   useEffect(async() => {
+    
     const plantID = route.params.plantID;
-    console.log("User_plant             :       "+route.params.user_plantID)
     const plantDoc = firebase.firestore().collection("plants").doc(plantID);
     await getData();
-    console.log("UseEffect UserID = " + userID);
     plantDoc.get().then((res) => {
       const category = res.data().category;
       const splitCategory = category.split(", ");
       if (res.exists) {
-        setID(res.id);
         setImage(res.data().image);
         setName(res.data().name);
         setType(res.data().type);
@@ -131,64 +102,47 @@ function selectedInfo({ navigation, route }) {
         setPrepare_ground(res.data().prepare_ground);
         setPrepare_plant(res.data().prepare_plant);
         setHow_to(res.data().how_to);
-        setAttend_date(res.data().attend_date);
-        setAttend_time(res.data().attend_time);
-        setRecive_range(res.data().recive_range);
         setHint(res.data().hint);
       } else {
         console.log("Document does not exist!!");
       }
     });
     getKeyUserPlant();
-  }, [route.params.plantID]);
+  }, [route.params.plantID, userID]);
+
+
+  const addFeedback = () => {
+    notificationDB.add({
+      do: "ส่งข้อเสนอแนะ",
+      name: "",
+      value: feedBack,
+      user_id: userID,
+      date: new Date(selectDate),
+      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+    })
+    .then((res) => {
+      console.log("Insert Notification Transaction Successfully")
+    });
+  }
 
   const sendFeedBack = () => {
     if (feedBack == "") {
       console.log("none feedback");
     } else {
-      console.log("send feedback: " + feedBack);
+      addFeedback()
     }
     setShowFeedBack(false);
     setFeedBack("");
   };
 
-  const notification = () => {
-    navigation.navigate("notification")
-    console.log("notification");
+
+  const back = () => {
+    navigation.popToTop()
   };
 
   const user = () => {
     navigation.navigate("profile")
-    console.log("user");
   };
-
-  // set select time to 8.00 am
-  function calculateSecondsToSpecifiedDate() {
-    selectDate.setDate(selectDate.getDate() + 1);
-    selectDate.setHours(7, 0, 0);
-    var Difference_In_Time = selectDate.getTime() - nowDate.getTime();
-    return Difference_In_Time;
-  }
-
-  async function schedulePushNotification() {
-    await Notifications.setNotificationChannelAsync("new-noti", {
-      name: "notifications",
-      importance: Notifications.AndroidImportance.HIGH,
-      sound: "mixkit-long-pop-2358.wav",
-    });
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "อย่าลืมลดน้ำต้นไม้นะ",
-        body: "ลดต้นผักชี",
-        data: { data: "goes here" },
-      },
-      trigger: {
-        seconds: calculateSecondsToSpecifiedDate(),
-        channelId: "new-noti",
-      },
-    });
-  }
 
   function checkDate(date) {
     const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -298,11 +252,11 @@ function selectedInfo({ navigation, route }) {
           placement="center"
           leftContainerStyle={{ paddingVertical: 0 }}
           leftComponent={{
-            icon: "notifications",
+            icon: "arrow-back-circle-outline",
             type: "ionicon",
             color: "#fff",
-            size: 30,
-            onPress: notification,
+            size: 35,
+            onPress: back,
           }}
           centerComponent={{
             text: isName,
@@ -414,7 +368,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   topPart: {
-    // marginTop: 10,
     flexWrap: "nowrap",
     flexDirection: "row",
     padding: 0,
@@ -455,14 +408,10 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 5,
-    textShadowColor: "black",
-    textShadowRadius: 0.5,
   },
   iconX: {
     fontSize: 30,
     color: "#000",
-    textShadowColor: "#fff",
-    textShadowRadius: 5,
   },
   contX: {
     position: "absolute",

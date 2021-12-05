@@ -8,17 +8,12 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
-  // Image
 } from "react-native";
-// expo install react-native-elements
-// expo install react-native-safe-area-context
-// expo install react-native-modal-datetime-picker @react-native-community/datetimepicker
-// expo install expo-notifications
+
 import { Header, Icon } from "react-native-elements";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import Image from "react-native-scalable-image";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { color } from "react-native-elements/dist/helpers";
 import * as Notifications from "expo-notifications";
 import firebase from "../database/firebaseDB";
 import { Entypo } from "@expo/vector-icons";
@@ -44,7 +39,6 @@ function plantInfo({ navigation, route }) {
   const [isShowFeedBack, setShowFeedBack] = useState(false);
   const [selectDate, setSelectDate] = useState(nowDate);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [isUser, setUser] = useState(true);
 
   ///plant Info
   const [isID, setID] = useState("");
@@ -61,18 +55,13 @@ function plantInfo({ navigation, route }) {
   const [isAttend_date, setAttend_date] = useState(0);
   const [isAttend_time, setAttend_time] = useState(0);
   const [isRecive_range, setRecive_range] = useState(0);
-  const [isPlanCollection, setPlanCollection] = useState([]);
-  // const [userPlantKey, setUserPlantKey] = useState("");
-  const [isUPPlant_id, setUPPlant_id] = useState("");
   const [userID, setUserID] = useState("");
-  let temp = "";
   let userPlantKey = "";
 
   const getData = async() => {
       try {
           const value = await AsyncStorage.getItem('id')
           setUserID(value);
-          console.log(userID);      
         } catch(e) {
           // error reading value
           console.log(e);
@@ -104,7 +93,6 @@ function plantInfo({ navigation, route }) {
       } else {
         console.log("Document does not exist!!");
       }
-      // userPlanDB.onSnapshot(getKeyUserPlant);
     });
   }, [route.params.plantID]);
 
@@ -128,6 +116,7 @@ function plantInfo({ navigation, route }) {
     notificationDB.add({
       do: "ส่งข้อเสนอแนะ",
       name: "",
+      value: feedBack,
       user_id: userID,
       date: new Date(selectDate),
       image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
@@ -163,8 +152,6 @@ function plantInfo({ navigation, route }) {
 
 
   const sendDate = async () => {
-    // console.log("Plant key :"+userPlantKey)
-    // console.log("user id is "+userID);
     setShowDate(false);
     setSelectDate(selectDate);
     const date = new Date();
@@ -174,7 +161,6 @@ function plantInfo({ navigation, route }) {
       image: isImage,
       name_plant: isName,
       plant_id: isID,
-      /////recive_dateยังใช้ไม่ได้
       recive_date: date,
       start_date: selectDate,
       type_plant: isType,
@@ -192,7 +178,6 @@ function plantInfo({ navigation, route }) {
       const between = i * isAttend_date
       const date = new Date(selectDate);
       date.setDate(date.getDate() + between);
-      // console.log(between)
       if(between < isRecive_range){
         temp.push({
           do: "รดน้ำต้นไม้",
@@ -203,7 +188,6 @@ function plantInfo({ navigation, route }) {
         })
       }
       else if(between >= isRecive_range){
-        console.log("User Plant Key = " + userPlantKey)
         temp.push({
           do: "เก็บเกี่ยวผล",
           plant_id: isID,
@@ -228,14 +212,12 @@ function plantInfo({ navigation, route }) {
     await schedulePushNotification();
   };
 
-  const notification = () => {
-    navigation.navigate("notification")
-    console.log("notification");
+  const back = () => {
+    navigation.popToTop()
   };
 
   const user = () => {
     navigation.navigate("profile")
-    console.log("user");
   };
 
 
@@ -423,11 +405,11 @@ function plantInfo({ navigation, route }) {
           placement="center"
           leftContainerStyle={{ paddingVertical: 0 }}
           leftComponent={{
-            icon: "notifications",
+            icon: "arrow-back-circle-outline",
             type: "ionicon",
             color: "#fff",
-            size: 30,
-            onPress: notification,
+            size: 35,
+            onPress: back,
           }}
           centerComponent={{
             text: isName,
@@ -505,45 +487,8 @@ function plantInfo({ navigation, route }) {
             คำแนะนำ: {"\n"}
             <Text style={styles.textDetail}>    {isHint}</Text>
           </Text>
-          {/* show if have user */}
-
-          {/* ต้องใช้ๆ */}
-          {userPlantKey !== ""  && (
-            <Text style={styles.headerText}>
-              สิ่งที่ต้องทำ:
-              {"\n"}
-              {isPlanCollection.map((l, i) => (
-                <Text
-                  key={l.key}
-                  style={[
-                    styles.textDetail,
-                    i == 0 && {
-                      textDecorationLine: "line-through",
-                      textDecorationColor: "black",
-                    },
-                  ]}
-                >
-                  {l.plan_date} : {l.do + "\n"}
-                </Text>
-              ))}
-            </Text>
-          )}
         </View>
       </ScrollView>
-
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-      {/* for test */}
-
-      {/* pick date button */}
-      {/* {userPlantKey !== "" && ( */}
         <Button
           title="เลือกเวลาเริ่มปลูก"
           buttonStyle={styles.selectTimeBtn}
@@ -553,7 +498,6 @@ function plantInfo({ navigation, route }) {
             setSelectDate(nowDate);
           }}
         />
-      {/* )} */}
     </View>
   );
 }
@@ -607,14 +551,10 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 5,
-    textShadowColor: "black",
-    textShadowRadius: 0.5,
   },
   iconX: {
     fontSize: 30,
     color: "#000",
-    textShadowColor: "#fff",
-    textShadowRadius: 5,
   },
   contX: {
     position: "absolute",

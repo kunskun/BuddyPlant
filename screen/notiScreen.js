@@ -3,37 +3,17 @@ import {
   StyleSheet,
   Text,
   View,
-  Pressable,
-  Modal,
   ScrollView,
 } from "react-native";
-import { SearchBar, ListItem, Avatar } from "react-native-elements";
+import { ListItem, Avatar } from "react-native-elements";
 import Image from "react-native-scalable-image";
-import { AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import firebase from "../database/firebaseDB";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function searchScreen() {
-  const [search, setSearch] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isLeaf, setLeaf] = useState(false);
-  const [isFruit, setFruit] = useState(false);
-  const [isRoot, setRoot] = useState(false);
-  const [isNotiClooection, setNotiColletion] = useState([])
+  const [isNotiCollection, setNotiColletion] = useState([])
   const notificationDB = firebase.firestore().collection("notifications");
-
-
-  const notiList = [
-    { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
-    { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
-    { name: "เก็บเกี่ยวผล", image: "https://cdn-icons-png.flaticon.com/512/1617/1617560.png" },
-    { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
-    { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
-    { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
-    { name: "รดน้ำต้นไม้", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Circle-icons-water.svg/1024px-Circle-icons-water.svg.png" },
-
-  ];
-
 
   let userID = ""
 
@@ -46,8 +26,15 @@ function searchScreen() {
     }
   };
 
+  function sortDate(all_data) {
+    const sortData = all_data.sort((a, b) => {
+      return b.date.toDate() - a.date.toDate()
+    })
+    return sortData
+  }
+
   const getNotiCollection = (querySnapshot) => {
-    const all_data = [];
+    var all_data = [];
     querySnapshot.forEach((res) => {
       if(res.data().user_id == userID)
       all_data.push({
@@ -58,12 +45,11 @@ function searchScreen() {
         do: res.data().do,
       });
     });
-    setNotiColletion(all_data);
+    setNotiColletion( sortDate(all_data));
   };
 
   useEffect(async () => {
     await getData();
-    // console.log("User ID AAAAAAAAAAAA : " + userID)
     notificationDB.onSnapshot(getNotiCollection);
   }, []);
 
@@ -84,7 +70,7 @@ function searchScreen() {
       <View style={styles.box}>
         <ScrollView style={{ width: "100%" }}>
           <View style={{ alignItems: "center", marginBottom: 20 }}>
-            {isNotiClooection.map((l, i) => (
+            {isNotiCollection.map((l, i) => (
               <View style={styles.card}>
                 <ListItem
                   key={l.name + i}
@@ -93,7 +79,7 @@ function searchScreen() {
                     borderRadius: 20,
                     padding: 20,
                   }} 
-                  onPress={() => {console.log(l.name);}}
+                  onPress={() => {console.log(l.do+" "+l.name);}}
                 >
                   <Avatar rounded size="medium" source={{ uri: l.image }} />
                   <ListItem.Content>
