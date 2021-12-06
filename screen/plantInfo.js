@@ -225,7 +225,7 @@ function plantInfo({ navigation, route }) {
   };
 
 
-  async function schedulePushNotification(time=2, message="เริ่มตั้งปลูกแล้ว") {
+  async function schedulePushNotification(time=1, message="ตั้งเวลาปลูกแล้ว") {
     await Notifications.setNotificationChannelAsync("new-noti", {
       name: "notifications",
       importance: Notifications.AndroidImportance.HIGH,
