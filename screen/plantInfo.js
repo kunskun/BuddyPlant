@@ -119,7 +119,8 @@ function plantInfo({ navigation, route }) {
       value: feedBack,
       user_id: userID,
       date: new Date(selectDate),
-      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+      current_date: new Date(),
+      image: "https://cdn-icons-png.flaticon.com/512/1541/1541470.png"
     })
     .then((res) => {
       console.log("Insert Notification Transaction Successfully")
@@ -143,7 +144,8 @@ function plantInfo({ navigation, route }) {
       name: isName,
       user_id: userID,
       date: new Date(selectDate),
-      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+      current_date: new Date(),
+      image: "https://cdn-icons-png.flaticon.com/512/1460/1460537.png"
     })
     .then((res) => {
       console.log("Insert Notification Transaction Successfully")
@@ -186,6 +188,7 @@ function plantInfo({ navigation, route }) {
           plan_time: "17:00:00",
           user_plant_id: userPlantKey,
         })
+        schedulePushNotification(date.getTime() - new Date().getTime(), "อย่าลืมรดน้ำต้นไม้นะ");
       }
       else if(between >= isRecive_range){
         temp.push({
@@ -195,6 +198,7 @@ function plantInfo({ navigation, route }) {
           plan_time: "17:00:00",
           user_plant_id: userPlantKey,
         })
+        schedulePushNotification(date.getTime() - new Date().getTime(), "เก็บเกี่ยวได้แล้ว");
         break;
       }
     }
@@ -221,7 +225,7 @@ function plantInfo({ navigation, route }) {
   };
 
 
-  async function schedulePushNotification() {
+  async function schedulePushNotification(time=2, message="เริ่มตั้งปลูกแล้ว") {
     await Notifications.setNotificationChannelAsync("new-noti", {
       name: "notifications",
       importance: Notifications.AndroidImportance.HIGH,
@@ -230,12 +234,12 @@ function plantInfo({ navigation, route }) {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "อย่าลืมรดน้ำต้นไม้นะ",
+        title: message,
         body: isName,
         data: { data: "goes here" },
       },
       trigger: {
-        seconds: 2,
+        seconds: time,
         channelId: "new-noti",
       },
     });

@@ -28,7 +28,7 @@ function searchScreen() {
 
   function sortDate(all_data) {
     const sortData = all_data.sort((a, b) => {
-      return b.date.toDate() - a.date.toDate()
+      return b.current_date.toDate() - a.current_date.toDate()
     })
     return sortData
   }
@@ -42,10 +42,11 @@ function searchScreen() {
         name: res.data().name,
         image: res.data().image,
         date: res.data().date,
+        current_date: res.data().current_date,
         do: res.data().do,
       });
     });
-    setNotiColletion( sortDate(all_data));
+    setNotiColletion(sortDate(all_data));
   };
 
   useEffect(async () => {

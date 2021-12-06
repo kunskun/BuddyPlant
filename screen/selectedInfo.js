@@ -118,7 +118,8 @@ function selectedInfo({ navigation, route }) {
       value: feedBack,
       user_id: userID,
       date: new Date(selectDate),
-      image: "https://e7.pngegg.com/pngimages/596/870/png-clipart-computer-icons-scalable-graphics-free-able-medical-alert-symbol-desktop-wallpaper-area.png"
+      current_date: new Date(),
+      image: "https://cdn-icons-png.flaticon.com/512/1541/1541470.png"
     })
     .then((res) => {
       console.log("Insert Notification Transaction Successfully")
