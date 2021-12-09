@@ -145,7 +145,7 @@ function plantInfo({ navigation, route }) {
       user_id: userID,
       date: new Date(selectDate),
       current_date: new Date(),
-      image: "https://cdn-icons.flaticon.com/png/512/5670/premium/5670162.png?token=exp=1638804326~hmac=e862c9d8fd4d5759423346764bd92b22"
+      image: "https://pics.freeicons.io/uploads/icons/png/18453753581581665319-512.png"
     })
     .then((res) => {
       console.log("Insert Notification Transaction Successfully")

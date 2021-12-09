@@ -134,6 +134,7 @@ function searchScreen({ navigation, route }) {
   };
 
   const dataSearch = (search) => {
+    clearFilter()
     const search_data = isPlantCollectionForFilter.filter((plant) => {
       return checkName(plant.name, search)
     });
@@ -144,14 +145,19 @@ function searchScreen({ navigation, route }) {
     }
   };
 
-  const closeModal = () => {
-    setModalVisible(!modalVisible);
+  
+  const clearFilter = () => {
     setTypeFlag("");
     setCategoryFlag("");
     setSeasonFlag("");
-    setPlantCollection(isPlantCollectionForFilter);
+  }
 
+  const closeModal = () => {
+    setModalVisible(!modalVisible);
+    clearFilter()
+    setPlantCollection(isPlantCollectionForFilter);
   };
+
 
   return (
     <View style={styles.container}>

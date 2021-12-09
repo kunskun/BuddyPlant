@@ -119,7 +119,7 @@ function selectedInfo({ navigation, route }) {
       user_id: userID,
       date: new Date(selectDate),
       current_date: new Date(),
-      image: "https://cdn-icons-png.flaticon.com/512/1541/1541470.png"
+      image: "https://cdn-icons-png.flaticon.com/512/724/724761.png"
     })
     .then((res) => {
       console.log("Insert Notification Transaction Successfully")
