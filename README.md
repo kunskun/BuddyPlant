@@ -29,7 +29,7 @@ Mobile Device Programming Project
 
 # Task to do
 <ul>
-  <li>Google Login <span>/almost done</span></li>
+  <li>Google Login</li>
   <li>UI</li>
   <li>Navigation</li>
   <li>Searchbar</li>
