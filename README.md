@@ -2,30 +2,30 @@
 Mobile Device Programming Project 
 
 # Dependencies Login and Navigation
-<ul>
-  <li>expo install expo-google-app-auth</li>
-  <li>expo install firebase</li>
-  <li>expo install @react-navigation/native</li>
-  <li>expo install @react-navigation/native-stack</li>
-  <li>expo install @react-navigation/stack</li>
-  <li>expo install @react-navigation/bottom-tabs</li>
-  <li>expo install @expo/vector-icons</li>
-  <li>expo install @react-native-async-storage/async-storage</li>
-  <li>expo install react-native-screens react-native-safe-area-context</li>
-</ul>
+```
+expo install expo-google-app-auth
+expo install firebase
+expo install @react-navigation/native
+expo install @react-navigation/native-stack
+expo install @react-navigation/stack
+expo install @react-navigation/bottom-tabs
+expo install @expo/vector-icons
+expo install @react-native-async-storage/async-storage
+expo install react-native-screens react-native-safe-area-context
+```
 
-# Dependencies each screen (Pao)
-<ul>
-  <li>expo install react-native-elements</li>
-  <li>expo install react-native-modal-datetime-picker @react-native-community/datetimepicker</li>
-  <li>expo install react-native-scalable-image</li>
-  <li>expo install expo-notifications</li>
-</ul>
+# Dependencies each screen
+```
+expo install react-native-elements
+expo install react-native-modal-datetime-picker @react-native-community/datetimepicker
+expo install react-native-scalable-image
+expo install expo-notifications
+```
 
 # If error (Optional)
-<ul>
-  <li>expo install react-native-gesture-handler</li>
-</ul>
+```
+expo install react-native-gesture-handler
+```
 
 # Task to do
 <ul>
